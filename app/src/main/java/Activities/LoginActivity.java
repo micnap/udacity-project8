@@ -1,19 +1,16 @@
-package com.mickeywilliamson.project8;
+package Activities;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -23,11 +20,13 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.mickeywilliamson.project8.R;
 
 public class LoginActivity extends AppCompatActivity {
 
     CallbackManager mCallbackManager;
     private FirebaseAuth mAuth;
+    LoginButton loginButton;
 
     private static final String TAG = "LoginActivity";
     private static final String EMAIL = "email";
@@ -42,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // Initialize Facebook Login button
         mCallbackManager = CallbackManager.Factory.create();
-        LoginButton loginButton = findViewById(R.id.button_facebook_login);
+        loginButton = findViewById(R.id.button_facebook_login);
         loginButton.setReadPermissions(EMAIL, PUBLIC_PROFILE);
         loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -69,7 +68,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        //updateUI(currentUser);
+        if (currentUser != null) {
+            updateUI(currentUser);
+        }
     }
 
     @Override
@@ -110,5 +111,4 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = new Intent(this, DailyScheduleActivity.class);
         startActivity(intent);
     }
-
 }
