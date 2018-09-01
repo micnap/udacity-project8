@@ -7,13 +7,13 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
-    <CheckBox
+    <com.buildware.widget.indeterm.IndeterminateCheckBox
         android:id="@+id/cb_hour_all"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:checked="false"
-        android:text="CheckBox"/>
+        android:text="CheckBox" />
 
     <ImageView
         android:id="@+id/open_tasks"

@@ -7,18 +7,7 @@
     android:layout_height="match_parent"
     tools:context="Activities.DailyScheduleActivity">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:background="?attr/colorPrimary"
-        android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:layout_constraintBottom_toTopOf="@+id/rv_protocol"
-        app:layout_constraintTop_toTopOf="parent"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"/>
+    
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_protocol"

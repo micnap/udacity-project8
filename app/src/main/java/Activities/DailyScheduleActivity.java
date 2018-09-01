@@ -24,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.buildware.widget.indeterm.IndeterminateCheckBox;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
@@ -37,7 +38,7 @@ import Models.Protocol;
 import Models.Task;
 import Models.ProtocolNonMalignant;
 
-public class DailyScheduleActivity extends AppCompatActivity  implements HourlyTaskDialogFragment.HourlyTaskDialogListener {
+public class DailyScheduleActivity extends AppCompatActivity implements HourlyTaskDialogFragment.HourlyTaskDialogListener  {
 
     private FirebaseAuth mAuth;
     private RecyclerView mProtocolRv;
@@ -53,8 +54,8 @@ public class DailyScheduleActivity extends AppCompatActivity  implements HourlyT
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
 
-        Toolbar myToolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(myToolbar);
+        //Toolbar myToolbar = findViewById(R.id.toolbar);
+        //setSupportActionBar(myToolbar);
 
         ProtocolNonMalignant protocol = new ProtocolNonMalignant();
         mProtocolSchedule = protocol.getProtocol();
@@ -102,6 +103,15 @@ public class DailyScheduleActivity extends AppCompatActivity  implements HourlyT
 
             holder.mHourCheckBox.setText(hourlyString);
 
+            String state = determineCheckboxState(currentHour);
+            if (state.equals("unchecked")) {
+                holder.mHourCheckBox.setChecked(false);
+            } else if (state.equals("checked")) {
+                holder.mHourCheckBox.setChecked(true);
+            } else {
+                holder.mHourCheckBox.setIndeterminate(true);
+            }
+
             holder.mHourCheckBox.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton cb, boolean isChecked) {
@@ -137,23 +147,52 @@ public class DailyScheduleActivity extends AppCompatActivity  implements HourlyT
 
         class ViewHolder extends RecyclerView.ViewHolder {
 
-            final CheckBox mHourCheckBox;
+            final IndeterminateCheckBox mHourCheckBox;
             final ImageView mOpenTasks;
 
             ViewHolder(View view) {
                 super(view);
-                mHourCheckBox = (CheckBox) view.findViewById(R.id.cb_hour_all);
+                mHourCheckBox = (IndeterminateCheckBox) view.findViewById(R.id.cb_hour_all);
                 mOpenTasks = (ImageView) view.findViewById(R.id.open_tasks);
             }
         }
+
+        private String determineCheckboxState(ArrayList<Task> taskList) {
+            boolean allFalse = true;
+            boolean allTrue = true;
+            for (int i = 0; i < taskList.size(); i++) {
+                if (taskList.get(i).getState() == true) {
+                    allFalse = false;
+                } else {
+                    allTrue = false;
+                }
+            }
+
+            if (allFalse == true) {
+                return "unchecked";
+            } else if (allTrue == true) {
+                return "checked";
+            } else {
+                return "indeterminant";
+            }
+
+        }
+
+
     }
+
 
     @Override
     public void onDialogPositiveClick(Bundle bundle) {
         ArrayList<Task> tasks = bundle.getParcelableArrayList("tasks");
         int hourIndex = bundle.getInt("hourIndex");
         mProtocolSchedule.set(hourIndex, tasks);
+
+        mProtocolAdapter.notifyDataSetChanged();
+
     }
+
+
 
 
     @Override

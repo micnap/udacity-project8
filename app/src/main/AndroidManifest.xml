@@ -11,7 +11,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name="Activities.DailyScheduleActivity">
+        <!--AppTheme style needed for indeterminant checkbox -->
+        <activity
+            android:theme="@style/AppTheme"
+            android:name="Activities.DailyScheduleActivity">
 
         </activity>
 
