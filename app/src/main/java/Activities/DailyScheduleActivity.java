@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import com.buildware.widget.indeterm.IndeterminateCheckBox;
 import com.facebook.login.LoginManager;
+//import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -41,6 +42,7 @@ import java.util.ArrayList;
 
 import Fragments.HourlyTaskDialogFragment;
 import Models.CeCoe;
+import Models.Hour;
 import Models.Juice;
 import Models.Meal;
 import Models.Supplement;
@@ -53,7 +55,7 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
     private FirebaseUser user;
     private DatabaseReference mDatabase;
     private RecyclerView mProtocolRv;
-    private ArrayList<ArrayList<Task>> mProtocolSchedule;
+    private ArrayList<Hour> mProtocolSchedule;
     private RecyclerView.LayoutManager mLayoutManager;
     private RecyclerView.Adapter mProtocolAdapter;
 
@@ -92,11 +94,11 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
             extends RecyclerView.Adapter<ProtocolRecyclerViewAdapter.ViewHolder> {
 
         private final DailyScheduleActivity mParentActivity;
-        private ArrayList<ArrayList<Task>> mProtocol;
+        private ArrayList<Hour> mProtocol;
         private DatabaseReference mDb;
         private String mUid;
 
-        ProtocolRecyclerViewAdapter(DailyScheduleActivity parent, ArrayList<ArrayList<Task>> protocol, DatabaseReference db, String uid) {
+        ProtocolRecyclerViewAdapter(DailyScheduleActivity parent, ArrayList<Hour> protocol, DatabaseReference db, String uid) {
             mParentActivity = parent;
             mProtocol = protocol;
             mDb = db;
@@ -113,14 +115,9 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
         @Override
         public void onBindViewHolder(@NonNull ProtocolRecyclerViewAdapter.ViewHolder holder, final int position) {
 
-            final ArrayList<Task> currentHour = mProtocol.get(position);
-            String hourlyString = "";
+            final Hour currentHour = mProtocol.get(position);
 
-            for (int i = 0; i < currentHour.size(); i++) {
-                hourlyString += currentHour.get(i) != null ? currentHour.get(i).toString() + ", " : "";
-            }
-
-            holder.mHourCheckBox.setText(hourlyString);
+            holder.mHourCheckBox.setText(currentHour.toString());
 
             String state = determineCheckboxState(currentHour);
             if (state.equals("unchecked")) {
@@ -132,47 +129,32 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
             }
 
             //https://stackoverflow.com/questions/25646048/how-to-convert-local-time-to-am-pm-time-format-using-jodatime
-            String hourTime = String.valueOf(ProtocolNonMalignant.hours.get(position));
-            LocalTime time = new LocalTime(hourTime);
+            LocalTime time = new LocalTime(currentHour.getMilitaryHour(), 0);
             DateTimeFormatter fmt = DateTimeFormat.forPattern("h:mm a");
             holder.mHour.setText(fmt.print(time));
+            //holder.mHour.setText(String.valueOf(currentHour.getMilitaryHour()));
 
             holder.mHourCheckBox.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton cb, boolean isChecked) {
-                    Log.d("CURRENTHOURSIZE", String.valueOf(currentHour.size()));
+
+                    cb = (IndeterminateCheckBox) cb;
+
+
                     if (cb.isChecked()) {
-                        int supplementCount = 0;
-                        for (Task task: currentHour) {
+                        currentHour.setState(true);
+                        mDb.child("daily").child(mUid + "_" + new LocalDate()).child(String.valueOf(currentHour.getMilitaryHour())).setValue(currentHour);
+                        //String classString = task instanceof Supplement ? task.getClassName() + supplementCount : task.getClassName();
+                        //mDb.child("daily").child(mUid + "_" + new LocalDate()).child(String.valueOf(currentHour.getMilitaryHour())).child(classString).setValue(task.getType());
+                        //if (task instanceof Supplement) {
+                        //    supplementCount++;
+                        //}
+                    } else if(((IndeterminateCheckBox) cb).isIndeterminate()) {
+                        mDb.child("daily").child(mUid + "_" + new LocalDate()).child(String.valueOf(currentHour.getMilitaryHour())).setValue(currentHour);
 
-
-                            if (task instanceof Juice) {
-                                task = (Juice) task;
-                            } else if (task instanceof Meal) {
-                                task = (Meal) task;
-                            } else if (task instanceof Supplement) {
-                                task = (Supplement) task;
-                            } else if (task instanceof CeCoe) {
-                                task = (CeCoe) task;
-                            }
-                            task.setState(true);
-
-                            Log.d(task.toString(), String.valueOf(task.getState()));
-                            Log.d("CLASS TYPE", task.getClass().toString());
-                            Log.d("TYPE", task.getType());
-                            Log.d("DATE", String.valueOf(new LocalDate()));
-                            String classString = task instanceof Supplement ? task.getClassName() + supplementCount : task.getClassName();
-                            mDb.child("daily").child(mUid + "_" + new LocalDate()).child(String.valueOf(ProtocolNonMalignant.hours.get(position))).child(classString).setValue(task.getType());
-                            if (task instanceof Supplement) {
-                                supplementCount++;
-                            }
-                        }
                     } else {
-                        for (Task task: currentHour) {
-                            task.setState(false);
-                            Log.d(task.toString(), String.valueOf(task.getState()));
-                        }
-                        mDb.child("daily").child(mUid + "_" + new LocalDate()).child(String.valueOf(ProtocolNonMalignant.hours.get(position))).removeValue();
+                        currentHour.setState(false);
+                        mDb.child("daily").child(mUid + "_" + new LocalDate()).child(String.valueOf(currentHour.getMilitaryHour())).removeValue();
                     }
                 }
             });
@@ -206,11 +188,23 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
             }
         }
 
-        private String determineCheckboxState(ArrayList<Task> taskList) {
+        private String determineCheckboxState(Hour hour) {
             boolean allFalse = true;
             boolean allTrue = true;
-            for (int i = 0; i < taskList.size(); i++) {
-                if (taskList.get(i).getState() == true) {
+
+            // Check the state of Juice, Meal, and CE.
+            if (hour.getJuice() != null && hour.getJuice().getState() == true ||
+                hour.getMeal() != null && hour.getMeal().getState() == true ||
+                hour.getCe() != null && hour.getCe().getState() == true) {
+                allFalse = false;
+            } else {
+                allTrue = false;
+            }
+
+            // Check the state of the supplements.
+            ArrayList<Supplement> supplements = hour.getSupplements();
+            for (int i = 0; i < supplements.size(); i++) {
+                if (supplements.get(i).getState() == true) {
                     allFalse = false;
                 } else {
                     allTrue = false;
@@ -233,43 +227,27 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
 
     @Override
     public void onDialogPositiveClick(Bundle bundle) {
-        ArrayList<Task> tasks = bundle.getParcelableArrayList("tasks");
+        Hour hour = bundle.getParcelable("hour");
         int hourIndex = bundle.getInt("hourIndex");
 
-        updateDb(tasks, hourIndex);
-        mProtocolSchedule.set(hourIndex, tasks);
+        updateDb(hour);
+        mProtocolSchedule.set(hourIndex, hour);
 
         mProtocolAdapter.notifyDataSetChanged();
 
     }
 
-    private void updateDb(ArrayList<Task> tasks, int hourIndex) {
+    private void updateDb(Hour hour) {
         int supplementCount = 0;
-        mDatabase.child("daily").child(user.getUid() + "_" + new LocalDate()).child(String.valueOf(ProtocolNonMalignant.hours.get(hourIndex))).removeValue();
-        for (Task task: tasks) {
+        //mDatabase.child("daily").child(user.getUid() + "_" + new LocalDate()).child(String.valueOf(hour.getMilitaryHour())).removeValue();
+        mDatabase.child("daily").child(user.getUid() + "_" + new LocalDate()).child(String.valueOf(hour.getMilitaryHour())).setValue(hour);
 
 
-            if (task instanceof Juice) {
-                task = (Juice) task;
-            } else if (task instanceof Meal) {
-                task = (Meal) task;
-            } else if (task instanceof Supplement) {
-                task = (Supplement) task;
-            } else if (task instanceof CeCoe) {
-                task = (CeCoe) task;
-            }
 
+        //if (task instanceof Supplement) {
+        //    supplementCount++;
+        //}
 
-            if (task.getState() == true) {
-                String classString = task instanceof Supplement ? task.getClassName() + supplementCount : task.getClassName();
-                mDatabase.child("daily").child(user.getUid() + "_" + new LocalDate()).child(String.valueOf(ProtocolNonMalignant.hours.get(hourIndex))).child(classString).setValue(task.getType());
-            }
-
-
-            if (task instanceof Supplement) {
-                supplementCount++;
-            }
-        }
     }
 
 

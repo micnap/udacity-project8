@@ -14,24 +14,24 @@ import com.mickeywilliamson.project8.R;
 
 import java.util.ArrayList;
 
+import Models.Hour;
 import Models.Task;
 
 public class HourlyTaskDialogFragment extends DialogFragment {
 
-    private ArrayList<Task> mHourlyTasks;
+    private Hour hour;
     private int hourIndex;
     private String[] tasks;
     private boolean[] checkedTasks;
     HourlyTaskDialogListener mListener;
 
-    public static HourlyTaskDialogFragment newInstance(ArrayList<Task> tasks, int hourIndex) {
+    public static HourlyTaskDialogFragment newInstance(Hour hour, int hourIndex) {
         HourlyTaskDialogFragment fragment = new HourlyTaskDialogFragment();
 
         Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList("tasks", tasks);
+        bundle.putParcelable("hour", hour);
         bundle.putInt("hourIndex", hourIndex);
         fragment.setArguments(bundle);
-
         return fragment;
     }
 
@@ -39,19 +39,15 @@ public class HourlyTaskDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        mHourlyTasks = getArguments().getParcelableArrayList("tasks");
+        hour = getArguments().getParcelable("hour");
         hourIndex = getArguments().getInt("hourIndex");
-        tasks = new String[mHourlyTasks.size()];
-        checkedTasks = new boolean[mHourlyTasks.size()];
 
-        for (int i = 0; i < mHourlyTasks.size(); i++) {
-            tasks[i] = mHourlyTasks.get(i).toString();
-            checkedTasks[i] = mHourlyTasks.get(i).getState();
-        }
+        tasks = hour.fetchHourItems();
+        checkedTasks = hour.fetchHourItemsState();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.dialog_title)
-                .setMultiChoiceItems(tasks, checkedTasks,
+                .setMultiChoiceItems(hour.fetchHourItems(), hour.fetchHourItemsState(),
                         new DialogInterface.OnMultiChoiceClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which,
@@ -68,12 +64,10 @@ public class HourlyTaskDialogFragment extends DialogFragment {
 
                 .setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        for (int i = 0; i < mHourlyTasks.size(); i++) {
-                            mHourlyTasks.get(i).setState(checkedTasks[i]);
-                        }
+                        hour.updateHourItemsState(checkedTasks);
 
                         Bundle bundle = new Bundle();
-                        bundle.putParcelableArrayList("tasks", mHourlyTasks);
+                        bundle.putParcelable("hour", hour);
                         bundle.putInt("hourIndex", hourIndex);
 
                         mListener.onDialogPositiveClick(bundle);

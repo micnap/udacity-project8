@@ -6,127 +6,97 @@ public class ProtocolNonMalignant extends Protocol {
 
     public static final ArrayList<Integer> hours = new ArrayList<>();
 
-    private static ArrayList<Task> HOUR_8 = new ArrayList<>();
-    private static ArrayList<Task> HOUR_9 = new ArrayList<>();
-    private static ArrayList<Task> HOUR_10 = new ArrayList<>();
-    private static ArrayList<Task> HOUR_11 = new ArrayList<>();
-    private static ArrayList<Task> HOUR_12 = new ArrayList<>();
-    private static ArrayList<Task> HOUR_13 = new ArrayList<>();
-    private static ArrayList<Task> HOUR_14 = new ArrayList<>();
-    private static ArrayList<Task> HOUR_17 = new ArrayList<>();
-    private static ArrayList<Task> HOUR_18 = new ArrayList<>();
-    private static ArrayList<Task> HOUR_19 = new ArrayList<>();
+    private Hour HOUR_8;
+    private Hour HOUR_9;
+    private Hour HOUR_10;
+    private Hour HOUR_11;
+    private Hour HOUR_12;
+    private Hour HOUR_13;
+    private Hour HOUR_14;
+    private Hour HOUR_17;
+    private Hour HOUR_18;
+    private Hour HOUR_19;
 
-    private static ArrayList<ArrayList<Task>> protocol = new ArrayList<ArrayList<Task>>();
+    private static ArrayList<Hour> protocol = new ArrayList<Hour>();
 
     public ProtocolNonMalignant() {
 
-        populateHours();
+        ArrayList<Supplement> supplements = new ArrayList<>();
 
-        HOUR_8.add(new Juice(Juice.JUICE_OJ));
-        HOUR_8.add(new Meal(Meal.MEAL_BREAKFAST));
-        HOUR_8.add(new Supplement(Supplement.SUPPLEMENT_POTASSIUM));
-        HOUR_8.add(new Supplement(Supplement.SUPPLEMENT_LUGOLS));
-        HOUR_8.add(new Supplement(Supplement.SUPPLEMENT_THYROID));
-        HOUR_8.add(new Supplement(Supplement.SUPPLEMENT_NIACIN));
-        HOUR_8.add(new Supplement(Supplement.SUPPLEMENT_LIVER));
-        HOUR_8.add(new Supplement(Supplement.SUPPLEMENT_PANCREATIN));
-        HOUR_8.add(new Supplement(Supplement.SUPPLEMENT_COQ10));
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_POTASSIUM));
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_LUGOLS));
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_THYROID));
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_NIACIN));
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_LIVER));
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_PANCREATIN));
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_COQ10));
+        HOUR_8 = new Hour(8, new Juice(Juice.JUICE_OJ), (ArrayList<Supplement>) supplements.clone(), new Meal(Meal.MEAL_BREAKFAST));
         protocol.add(HOUR_8);
 
-        HOUR_9.add(new Juice(Juice.JUICE_GREEN));
-        HOUR_9.add(new Supplement(Supplement.SUPPLEMENT_POTASSIUM));
-        HOUR_9.add(new CeCoe(CeCoe.CE));
+        supplements.clear();
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_POTASSIUM));
+        HOUR_9 = new Hour(9, new Juice(Juice.JUICE_GREEN), (ArrayList<Supplement>) supplements.clone(), new CeCoe(CeCoe.CE));
         protocol.add(HOUR_9);
 
-        HOUR_10.add(new Juice(Juice.JUICE_CARROT_APPLE));
-        HOUR_10.add(new Supplement(Supplement.SUPPLEMENT_POTASSIUM));
-        HOUR_10.add(new Supplement(Supplement.SUPPLEMENT_NIACIN));
+        supplements.clear();
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_POTASSIUM));
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_NIACIN));
+        HOUR_10 = new Hour(10, new Juice(Juice.JUICE_CARROT_APPLE), (ArrayList<Supplement>) supplements.clone());
         protocol.add(HOUR_10);
 
         // TODO: Add injection every other day - need to get day of year and do on even days
-        HOUR_11.add(new Juice(Juice.JUICE_CARROT));
-        HOUR_11.add(new Supplement(Supplement.SUPPLEMENT_LIVER));
+        supplements.clear();
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_LIVER));
+        HOUR_11 = new Hour(11, new Juice(Juice.JUICE_CARROT), (ArrayList<Supplement>) supplements.clone());
         protocol.add(HOUR_11);
 
-        HOUR_12.add(new Juice(Juice.JUICE_GREEN));
-        HOUR_12.add(new Supplement(Supplement.SUPPLEMENT_POTASSIUM));
+        supplements.clear();
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_POTASSIUM));
+        HOUR_12 = new Hour(12, new Juice(Juice.JUICE_GREEN), (ArrayList<Supplement>) supplements.clone());
         protocol.add(HOUR_12);
 
-        HOUR_13.add(new Juice(Juice.JUICE_CARROT_APPLE));
-        HOUR_13.add(new Meal(Meal.MEAL_LUNCH));
-        HOUR_13.add(new Supplement(Supplement.SUPPLEMENT_ACIDOL));
-        HOUR_13.add(new Supplement(Supplement.SUPPLEMENT_POTASSIUM));
-        HOUR_13.add(new Supplement(Supplement.SUPPLEMENT_LUGOLS));
-        HOUR_13.add(new Supplement(Supplement.SUPPLEMENT_THYROID));
-        HOUR_13.add(new Supplement(Supplement.SUPPLEMENT_NIACIN));
-        HOUR_13.add(new Supplement(Supplement.SUPPLEMENT_PANCREATIN));
-        HOUR_13.add(new Supplement(Supplement.SUPPLEMENT_COQ10));
+        supplements.clear();
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_ACIDOL));
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_POTASSIUM));
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_LUGOLS));
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_THYROID));
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_NIACIN));
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_PANCREATIN));
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_COQ10));
+        HOUR_13 = new Hour( 13, new Juice(Juice.JUICE_CARROT_APPLE), (ArrayList<Supplement>) supplements.clone(), new Meal(Meal.MEAL_LUNCH));
         protocol.add(HOUR_13);
 
-        HOUR_14.add(new Juice(Juice.JUICE_GREEN));
-        HOUR_14.add(new Supplement(Supplement.SUPPLEMENT_POTASSIUM));
-        HOUR_14.add(new CeCoe(CeCoe.CE));
+        supplements.clear();
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_POTASSIUM));
+        HOUR_14 = new Hour(14, new Juice(Juice.JUICE_GREEN), (ArrayList<Supplement>) supplements.clone(), new CeCoe(CeCoe.CE));
         protocol.add(HOUR_14);
 
-        HOUR_17.add(new Juice(Juice.JUICE_CARROT_APPLE));
-        HOUR_17.add(new Supplement(Supplement.SUPPLEMENT_POTASSIUM));
-        HOUR_17.add(new Supplement(Supplement.SUPPLEMENT_NIACIN));
-        HOUR_17.add(new Supplement(Supplement.SUPPLEMENT_PANCREATIN));
+        supplements.clear();
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_POTASSIUM));
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_NIACIN));
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_PANCREATIN));
+        HOUR_17 = new Hour(17, new Juice(Juice.JUICE_CARROT_APPLE), (ArrayList<Supplement>) supplements.clone());
         protocol.add(HOUR_17);
 
-        HOUR_18.add(new Juice(Juice.JUICE_GREEN));
-        HOUR_18.add(new Supplement(Supplement.SUPPLEMENT_POTASSIUM));
-        HOUR_18.add(new CeCoe(CeCoe.CE));
+        supplements.clear();
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_POTASSIUM));
+        HOUR_18 = new Hour(18, new Juice(Juice.JUICE_GREEN), (ArrayList<Supplement>) supplements.clone(), new CeCoe(CeCoe.CE));
         protocol.add(HOUR_18);
 
-        HOUR_19.add(new Juice(Juice.JUICE_CARROT_APPLE));
-        HOUR_19.add(new Meal(Meal.MEAL_SUPPER));
-        HOUR_19.add(new Supplement(Supplement.SUPPLEMENT_ACIDOL));
-        HOUR_19.add(new Supplement(Supplement.SUPPLEMENT_POTASSIUM));
-        HOUR_19.add(new Supplement(Supplement.SUPPLEMENT_LUGOLS));
-        HOUR_19.add(new Supplement(Supplement.SUPPLEMENT_NIACIN));
-        HOUR_19.add(new Supplement(Supplement.SUPPLEMENT_LIVER));
-        HOUR_19.add(new Supplement(Supplement.SUPPLEMENT_PANCREATIN));
-        HOUR_19.add(new Supplement(Supplement.SUPPLEMENT_COQ10));
+        supplements.clear();
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_ACIDOL));
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_POTASSIUM));
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_LUGOLS));
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_NIACIN));
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_LIVER));
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_PANCREATIN));
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_COQ10));
+        HOUR_19 = new Hour(19, new Juice(Juice.JUICE_CARROT_APPLE), (ArrayList<Supplement>) supplements.clone(), new Meal(Meal.MEAL_SUPPER));
         protocol.add(HOUR_19);
 
     }
 
-    private void populateHours() {
-        // {8, 9, 10, 11, 12, 13, 14, 17, 18, 19};
-        hours.add(8);
-        hours.add(9);
-        hours.add(10);
-        hours.add(11);
-        hours.add(12);
-        hours.add(13);
-        hours.add(14);
-        hours.add(17);
-        hours.add(18);
-        hours.add(19);
-    }
-
-    public ArrayList<ArrayList<Task>> getProtocol() {
+    public ArrayList<Hour> getProtocol() {
         return protocol;
-    }
-
-    public static String toHourlyString(ArrayList<String> hourlyList) {
-
-        String juice = hourlyList.get(0).toString();
-        String meal = hourlyList.get(1).toString();
-        if (meal != null) {
-            meal = ", " + meal;
-        }
-        String supplements = hourlyList.get(2).toString();
-        if (supplements != null) {
-            supplements = ", " + supplements;
-        }
-
-        return juice + meal + supplements + Protocol.CE;
-    }
-
-    public int convertHourToIndex(int hour) {
-        return hours.indexOf(hour);
     }
 }
