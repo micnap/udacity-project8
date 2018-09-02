@@ -6,8 +6,17 @@ import android.os.Parcelable;
 public abstract class Task implements Parcelable {
 
     private boolean state = false;
+    private String type;
 
     public Task() {}
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public void setState(boolean state) {
         this.state = state;
@@ -19,6 +28,10 @@ public abstract class Task implements Parcelable {
 
     @Override
     public abstract String toString();
+
+    public String getClassName() {
+        return "Task";
+    }
 
     protected Task(Parcel in) {
 

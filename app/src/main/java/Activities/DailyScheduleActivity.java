@@ -26,21 +26,32 @@ import android.widget.TextView;
 
 import com.buildware.widget.indeterm.IndeterminateCheckBox;
 import com.facebook.login.LoginManager;
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.mickeywilliamson.project8.R;
+
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 
 import Fragments.HourlyTaskDialogFragment;
-import Models.Protocol;
+import Models.CeCoe;
+import Models.Juice;
+import Models.Meal;
+import Models.Supplement;
 import Models.Task;
 import Models.ProtocolNonMalignant;
 
 public class DailyScheduleActivity extends AppCompatActivity implements HourlyTaskDialogFragment.HourlyTaskDialogListener  {
 
     private FirebaseAuth mAuth;
+    private FirebaseUser user;
+    private DatabaseReference mDatabase;
     private RecyclerView mProtocolRv;
     private ArrayList<ArrayList<Task>> mProtocolSchedule;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -52,7 +63,9 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
         setContentView(R.layout.activity_daily_schedule);
 
         mAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = mAuth.getCurrentUser();
+        user = mAuth.getCurrentUser();
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         //Toolbar myToolbar = findViewById(R.id.toolbar);
         //setSupportActionBar(myToolbar);
@@ -64,8 +77,10 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
         mProtocolRv.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
         mProtocolRv.setLayoutManager(mLayoutManager);
-        mProtocolAdapter = new ProtocolRecyclerViewAdapter(this, mProtocolSchedule);
+        mProtocolAdapter = new ProtocolRecyclerViewAdapter(this, mProtocolSchedule, mDatabase, user.getUid());
         mProtocolRv.setAdapter(mProtocolAdapter);
+
+
 
     }
 
@@ -78,10 +93,14 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
 
         private final DailyScheduleActivity mParentActivity;
         private ArrayList<ArrayList<Task>> mProtocol;
+        private DatabaseReference mDb;
+        private String mUid;
 
-        ProtocolRecyclerViewAdapter(DailyScheduleActivity parent, ArrayList<ArrayList<Task>> protocol) {
+        ProtocolRecyclerViewAdapter(DailyScheduleActivity parent, ArrayList<ArrayList<Task>> protocol, DatabaseReference db, String uid) {
             mParentActivity = parent;
             mProtocol = protocol;
+            mDb = db;
+            mUid = uid;
         }
 
         @NonNull
@@ -112,20 +131,48 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
                 holder.mHourCheckBox.setIndeterminate(true);
             }
 
+            //https://stackoverflow.com/questions/25646048/how-to-convert-local-time-to-am-pm-time-format-using-jodatime
+            String hourTime = String.valueOf(ProtocolNonMalignant.hours.get(position));
+            LocalTime time = new LocalTime(hourTime);
+            DateTimeFormatter fmt = DateTimeFormat.forPattern("h:mm a");
+            holder.mHour.setText(fmt.print(time));
+
             holder.mHourCheckBox.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton cb, boolean isChecked) {
-
+                    Log.d("CURRENTHOURSIZE", String.valueOf(currentHour.size()));
                     if (cb.isChecked()) {
+                        int supplementCount = 0;
                         for (Task task: currentHour) {
+
+
+                            if (task instanceof Juice) {
+                                task = (Juice) task;
+                            } else if (task instanceof Meal) {
+                                task = (Meal) task;
+                            } else if (task instanceof Supplement) {
+                                task = (Supplement) task;
+                            } else if (task instanceof CeCoe) {
+                                task = (CeCoe) task;
+                            }
                             task.setState(true);
+
                             Log.d(task.toString(), String.valueOf(task.getState()));
+                            Log.d("CLASS TYPE", task.getClass().toString());
+                            Log.d("TYPE", task.getType());
+                            Log.d("DATE", String.valueOf(new LocalDate()));
+                            String classString = task instanceof Supplement ? task.getClassName() + supplementCount : task.getClassName();
+                            mDb.child("daily").child(mUid + "_" + new LocalDate()).child(String.valueOf(ProtocolNonMalignant.hours.get(position))).child(classString).setValue(task.getType());
+                            if (task instanceof Supplement) {
+                                supplementCount++;
+                            }
                         }
                     } else {
                         for (Task task: currentHour) {
                             task.setState(false);
                             Log.d(task.toString(), String.valueOf(task.getState()));
                         }
+                        mDb.child("daily").child(mUid + "_" + new LocalDate()).child(String.valueOf(ProtocolNonMalignant.hours.get(position))).removeValue();
                     }
                 }
             });
@@ -149,11 +196,13 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
 
             final IndeterminateCheckBox mHourCheckBox;
             final ImageView mOpenTasks;
+            final TextView mHour;
 
             ViewHolder(View view) {
                 super(view);
                 mHourCheckBox = (IndeterminateCheckBox) view.findViewById(R.id.cb_hour_all);
                 mOpenTasks = (ImageView) view.findViewById(R.id.open_tasks);
+                mHour = (TextView) view.findViewById(R.id.hour);
             }
         }
 
@@ -186,10 +235,41 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
     public void onDialogPositiveClick(Bundle bundle) {
         ArrayList<Task> tasks = bundle.getParcelableArrayList("tasks");
         int hourIndex = bundle.getInt("hourIndex");
+
+        updateDb(tasks, hourIndex);
         mProtocolSchedule.set(hourIndex, tasks);
 
         mProtocolAdapter.notifyDataSetChanged();
 
+    }
+
+    private void updateDb(ArrayList<Task> tasks, int hourIndex) {
+        int supplementCount = 0;
+        mDatabase.child("daily").child(user.getUid() + "_" + new LocalDate()).child(String.valueOf(ProtocolNonMalignant.hours.get(hourIndex))).removeValue();
+        for (Task task: tasks) {
+
+
+            if (task instanceof Juice) {
+                task = (Juice) task;
+            } else if (task instanceof Meal) {
+                task = (Meal) task;
+            } else if (task instanceof Supplement) {
+                task = (Supplement) task;
+            } else if (task instanceof CeCoe) {
+                task = (CeCoe) task;
+            }
+
+
+            if (task.getState() == true) {
+                String classString = task instanceof Supplement ? task.getClassName() + supplementCount : task.getClassName();
+                mDatabase.child("daily").child(user.getUid() + "_" + new LocalDate()).child(String.valueOf(ProtocolNonMalignant.hours.get(hourIndex))).child(classString).setValue(task.getType());
+            }
+
+
+            if (task instanceof Supplement) {
+                supplementCount++;
+            }
+        }
     }
 
 

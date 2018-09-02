@@ -13,13 +13,25 @@ public class Juice extends Task implements Parcelable {
 
     private String type;
 
-    public Juice(String type) {
+    public Juice() {}
+
+    public Juice(String type) { this.type = type; }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
         this.type = type;
     }
 
     @Override
     public String toString() {
         return type;
+    }
+
+    public String getClassName() {
+        return "Juice";
     }
 
     protected Juice(Parcel in) {
