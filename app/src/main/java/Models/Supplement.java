@@ -17,6 +17,8 @@ public class Supplement extends Task implements Parcelable {
 
     private String type;
 
+    public Supplement() {}
+
     public Supplement(String type) {
         this.type = type;
     }

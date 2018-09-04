@@ -27,10 +27,17 @@ import android.widget.TextView;
 import com.buildware.widget.indeterm.IndeterminateCheckBox;
 import com.facebook.login.LoginManager;
 //import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.database.ObservableSnapshotArray;
+import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.mickeywilliamson.project8.R;
 
 import org.joda.time.LocalDate;
@@ -51,71 +58,104 @@ import Models.ProtocolNonMalignant;
 
 public class DailyScheduleActivity extends AppCompatActivity implements HourlyTaskDialogFragment.HourlyTaskDialogListener  {
 
-    private FirebaseAuth mAuth;
-    private FirebaseUser user;
     private DatabaseReference mDatabase;
     private RecyclerView mProtocolRv;
-    private ArrayList<Hour> mProtocolSchedule;
-    private RecyclerView.LayoutManager mLayoutManager;
-    private RecyclerView.Adapter mProtocolAdapter;
+    private String protocolKey;
+    private ProtocolRecyclerViewAdapter mProtocolAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_daily_schedule);
 
-        mAuth = FirebaseAuth.getInstance();
-        user = mAuth.getCurrentUser();
+        protocolKey = "daily/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "_" + new LocalDate();
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        //Toolbar myToolbar = findViewById(R.id.toolbar);
-        //setSupportActionBar(myToolbar);
+        /*SnapshotParser<Hour> snapShotParser = new SnapshotParser<Hour>() {
+            @NonNull
+            @Override
+            public Hour parseSnapshot(@NonNull DataSnapshot snapshot) {
 
-        ProtocolNonMalignant protocol = new ProtocolNonMalignant();
-        mProtocolSchedule = protocol.getProtocol();
+
+                Hour hmm = snapshot.getValue(Hour.class);
+                Log.d("WELL", hmm.getJuice().toString());
+                return hmm;
+            }
+        };*/
+
+        Query query = mDatabase.child(protocolKey);
+
+        FirebaseRecyclerOptions<Hour> options =
+                new FirebaseRecyclerOptions.Builder<Hour>()
+                        .setQuery(query, Hour.class)
+                        .build();
+
 
         mProtocolRv = findViewById(R.id.rv_protocol);
         mProtocolRv.setHasFixedSize(true);
-        mLayoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
         mProtocolRv.setLayoutManager(mLayoutManager);
-        mProtocolAdapter = new ProtocolRecyclerViewAdapter(this, mProtocolSchedule, mDatabase, user.getUid());
+        mProtocolAdapter = new ProtocolRecyclerViewAdapter(this, mDatabase, protocolKey, options);
         mProtocolRv.setAdapter(mProtocolAdapter);
-
-
-
     }
 
-
-    /**
-     * The adapter for the recipe recyclerview.
-     */
-    public static class ProtocolRecyclerViewAdapter
-            extends RecyclerView.Adapter<ProtocolRecyclerViewAdapter.ViewHolder> {
+    public static class ProtocolRecyclerViewAdapter extends FirebaseRecyclerAdapter<Hour, ProtocolRecyclerViewAdapter.HourHolder> {
 
         private final DailyScheduleActivity mParentActivity;
-        private ArrayList<Hour> mProtocol;
         private DatabaseReference mDb;
-        private String mUid;
+        private String protocolUserDateKey;
+        private final ObservableSnapshotArray<Hour> mSnapshots;
+        ProtocolNonMalignant mProtocol = new ProtocolNonMalignant();
 
-        ProtocolRecyclerViewAdapter(DailyScheduleActivity parent, ArrayList<Hour> protocol, DatabaseReference db, String uid) {
+
+        ProtocolRecyclerViewAdapter(DailyScheduleActivity parent, DatabaseReference db, String protocolKey, FirebaseRecyclerOptions<Hour> options) {
+            super(options);
             mParentActivity = parent;
-            mProtocol = protocol;
             mDb = db;
-            mUid = uid;
+            protocolUserDateKey = protocolKey;
+
+            mSnapshots = options.getSnapshots();
+
+        }
+
+        @Override
+        public void onError(@NonNull DatabaseError error) {
+            Log.d("GRRRRR", "GRRRRR");
+            super.onError(error);
+
+        }
+
+        @Override
+        public int getItemCount() {
+            Log.d("SNAPSHOT SIZE", String.valueOf(mSnapshots.size()));
+            return mSnapshots.isListening(this) ? mSnapshots.size() : 0;
+            //return hmmList.size();
+        }
+
+        @Override
+        public void onDataChanged() {
+            super.onDataChanged();
+            if (getItemCount() == 0) {
+                ProtocolNonMalignant mProtocol = new ProtocolNonMalignant();
+                ArrayList<Hour> hours = mProtocol.buildProtocol();
+                for (int i = 0; i < hours.size(); i++) {
+                    mDb.child(protocolUserDateKey).child(String.valueOf(hours.get(i).getMilitaryHour())).setValue(hours.get(i));
+                }
+            }
         }
 
         @NonNull
         @Override
-        public ProtocolRecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public HourHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.rv_protocol_row, parent, false);
-            return new ViewHolder(view);
+            return new HourHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull ProtocolRecyclerViewAdapter.ViewHolder holder, final int position) {
+        public void onBindViewHolder(@NonNull HourHolder holder, final int position, final Hour currentHour) {
 
-            final Hour currentHour = mProtocol.get(position);
+
 
             holder.mHourCheckBox.setText(currentHour.toString());
 
@@ -143,18 +183,18 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
 
                     if (cb.isChecked()) {
                         currentHour.setState(true);
-                        mDb.child("daily").child(mUid + "_" + new LocalDate()).child(String.valueOf(currentHour.getMilitaryHour())).setValue(currentHour);
+                        mDb.child(protocolUserDateKey).child(String.valueOf(currentHour.getMilitaryHour())).setValue(currentHour);
                         //String classString = task instanceof Supplement ? task.getClassName() + supplementCount : task.getClassName();
                         //mDb.child("daily").child(mUid + "_" + new LocalDate()).child(String.valueOf(currentHour.getMilitaryHour())).child(classString).setValue(task.getType());
                         //if (task instanceof Supplement) {
                         //    supplementCount++;
                         //}
                     } else if(((IndeterminateCheckBox) cb).isIndeterminate()) {
-                        mDb.child("daily").child(mUid + "_" + new LocalDate()).child(String.valueOf(currentHour.getMilitaryHour())).setValue(currentHour);
+                        mDb.child(protocolUserDateKey).child(String.valueOf(currentHour.getMilitaryHour())).setValue(currentHour);
 
                     } else {
                         currentHour.setState(false);
-                        mDb.child("daily").child(mUid + "_" + new LocalDate()).child(String.valueOf(currentHour.getMilitaryHour())).removeValue();
+                        mDb.child(protocolUserDateKey).child(String.valueOf(currentHour.getMilitaryHour())).setValue(currentHour);
                     }
                 }
             });
@@ -167,20 +207,22 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
                     hourlyTasksFragment.show(mParentActivity.getSupportFragmentManager(), "HourlyTasks");
                 }
             });
+
+
         }
 
-        @Override
+        /*@Override
         public int getItemCount() {
             return mProtocol.size();
-        }
+        }*/
 
-        class ViewHolder extends RecyclerView.ViewHolder {
+        class HourHolder extends RecyclerView.ViewHolder {
 
             final IndeterminateCheckBox mHourCheckBox;
             final ImageView mOpenTasks;
             final TextView mHour;
 
-            ViewHolder(View view) {
+            HourHolder(View view) {
                 super(view);
                 mHourCheckBox = (IndeterminateCheckBox) view.findViewById(R.id.cb_hour_all);
                 mOpenTasks = (ImageView) view.findViewById(R.id.open_tasks);
@@ -230,17 +272,17 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
         Hour hour = bundle.getParcelable("hour");
         int hourIndex = bundle.getInt("hourIndex");
 
-        updateDb(hour);
-        mProtocolSchedule.set(hourIndex, hour);
+        //updateDb(hour);
+        //mProtocolSchedule.set(hourIndex, hour);
 
-        mProtocolAdapter.notifyDataSetChanged();
+        //mProtocolAdapter.notifyDataSetChanged();
 
     }
 
     private void updateDb(Hour hour) {
         int supplementCount = 0;
         //mDatabase.child("daily").child(user.getUid() + "_" + new LocalDate()).child(String.valueOf(hour.getMilitaryHour())).removeValue();
-        mDatabase.child("daily").child(user.getUid() + "_" + new LocalDate()).child(String.valueOf(hour.getMilitaryHour())).setValue(hour);
+        mDatabase.child("daily").child(protocolKey).child(String.valueOf(hour.getMilitaryHour())).setValue(hour);
 
 
 
@@ -276,5 +318,17 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mProtocolAdapter.startListening();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mProtocolAdapter.stopListening();
     }
 }

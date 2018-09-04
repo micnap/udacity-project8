@@ -15,7 +15,7 @@ public class ProtocolNonMalignant extends Protocol {
     private Hour HOUR_18;
     private Hour HOUR_19;
 
-    private static ArrayList<Hour> protocol = new ArrayList<Hour>();
+    private ArrayList<Hour> protocol = new ArrayList<Hour>();
 
     public Hour getHOUR_8() {
         return HOUR_8;
@@ -97,8 +97,8 @@ public class ProtocolNonMalignant extends Protocol {
         this.HOUR_19 = HOUR_19;
     }
 
-    public static void setProtocol(ArrayList<Hour> protocol) {
-        ProtocolNonMalignant.protocol = protocol;
+    public void setProtocol(ArrayList<Hour> protocol) {
+        this.protocol = protocol;
     }
 
     public ProtocolNonMalignant() {}

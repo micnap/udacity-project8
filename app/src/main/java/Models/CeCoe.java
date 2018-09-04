@@ -11,6 +11,8 @@ public class CeCoe extends Task implements Parcelable {
 
     private String type;
 
+    public CeCoe() {}
+
     public CeCoe(String type) {
         this.type = type;
     }
