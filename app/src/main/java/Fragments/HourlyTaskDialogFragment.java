@@ -3,6 +3,7 @@ package Fragments;
 import android.app.Activity;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -40,12 +41,15 @@ public class HourlyTaskDialogFragment extends DialogFragment {
 
         hour = getArguments().getParcelable("hour");
 
+        //Log.d("BUNDLE MEAL", String.valueOf(hour.getMeal().getState()));
         tasks = hour.fetchHourItems();
         checkedTasks = hour.fetchHourItemsState();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.dialog_title)
-                .setMultiChoiceItems(tasks, checkedTasks,
+                .setMultiChoiceItems(null, null, null);
+        builder.setTitle(R.string.dialog_title)
+                .setMultiChoiceItems(tasks, hour.fetchHourItemsState(),
                         new DialogInterface.OnMultiChoiceClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which,
@@ -85,20 +89,24 @@ public class HourlyTaskDialogFragment extends DialogFragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        if (context instanceof Activity) {
+            context = (Activity) context;
+            super.onAttach(context);
+        }
+
 
         try {
-            mListener = (HourlyTaskDialogListener) activity;
+            mListener = (HourlyTaskDialogListener) context;
         } catch (ClassCastException e) {
             // The activity doesn't implement the interface, throw exception
-            throw new ClassCastException(activity.toString()
+            throw new ClassCastException(context.toString()
                     + " must implement HourlyTaskDialogListener");
         }
 
     }
 
     public interface HourlyTaskDialogListener {
-        void onDialogPositiveClick(final Bundle bundle);
+        void onDialogPositiveClick(Bundle bundle);
     }
 }

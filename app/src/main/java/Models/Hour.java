@@ -87,6 +87,7 @@ public class Hour implements Parcelable {
 
     public void setState(boolean state) {
         this.state = state;
+        Log.d("TIME", String.valueOf(this.militaryHour));
 
         if (juice != null) {
             juice.setState(state);
@@ -192,20 +193,20 @@ public class Hour implements Parcelable {
         String hourString = "";
 
         if (juice != null) {
-            hourString += juice.toString();
+            hourString += juice.toString() + ": " + state + "\n";
         }
 
         if (meal != null) {
-            hourString += ", " + meal.toString();
+            hourString += meal.toString() + ": " + state + "\n";
         }
 
         if (ce != null) {
-            hourString += ", " + ce.toString();
+            hourString += ce.toString() + ": " + state + "\n";
         }
 
         if (supplements != null) {
             for (Supplement supplement: supplements) {
-                hourString += ", " + supplement;
+                hourString += supplement + ": " + state + "\n";
             }
         }
 

@@ -27,6 +27,7 @@ import android.widget.TextView;
 import com.buildware.widget.indeterm.IndeterminateCheckBox;
 import com.facebook.login.LoginManager;
 //import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.common.ChangeEventType;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.ObservableSnapshotArray;
@@ -93,7 +94,7 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
 
 
         mProtocolRv = findViewById(R.id.rv_protocol);
-        mProtocolRv.setHasFixedSize(true);
+        mProtocolRv.setHasFixedSize(false);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
         mProtocolRv.setLayoutManager(mLayoutManager);
         mProtocolAdapter = new ProtocolRecyclerViewAdapter(this, mDatabase, protocolKey, options);
@@ -105,7 +106,6 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
         private final DailyScheduleActivity mParentActivity;
         private DatabaseReference mDb;
         private String protocolUserDateKey;
-        private final ObservableSnapshotArray<Hour> mSnapshots;
         ProtocolNonMalignant mProtocol = new ProtocolNonMalignant();
 
 
@@ -114,26 +114,13 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
             mParentActivity = parent;
             mDb = db;
             protocolUserDateKey = protocolKey;
-
-            mSnapshots = options.getSnapshots();
-
-        }
-
-        @Override
-        public void onError(@NonNull DatabaseError error) {
-            super.onError(error);
-        }
-
-        @Override
-        public int getItemCount() {
-
-            return mSnapshots.isListening(this) ? mSnapshots.size() : 0;
-            //return hmmList.size();
         }
 
         @Override
         public void onDataChanged() {
             super.onDataChanged();
+
+            // Populate the db if the current day doesn't yet exist for the current user.
             if (getItemCount() == 0) {
                 ProtocolNonMalignant mProtocol = new ProtocolNonMalignant();
                 ArrayList<Hour> hours = mProtocol.buildProtocol();
@@ -151,11 +138,13 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
         }
 
         @Override
-        public void onBindViewHolder(@NonNull HourHolder holder, final int position, final Hour currentHour) {
-
+        public void onBindViewHolder(@NonNull HourHolder holder, int position, final Hour currentHour) {
 
             holder.mHourCheckBox.setText(currentHour.toString());
 
+            // Because recyclerview recycles the views, the checked change listener was
+            // getting called multiple times when a box was checked.  This corrects that.
+            holder.mHourCheckBox.setOnCheckedChangeListener (null);
             String state = determineCheckboxState(currentHour);
             if (state.equals("unchecked")) {
                 holder.mHourCheckBox.setChecked(false);
@@ -169,21 +158,19 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
             LocalTime time = new LocalTime(currentHour.getMilitaryHour(), 0);
             DateTimeFormatter fmt = DateTimeFormat.forPattern("h:mm a");
             holder.mHour.setText(fmt.print(time));
-            //holder.mHour.setText(String.valueOf(currentHour.getMilitaryHour()));
 
             holder.mHourCheckBox.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener() {
+
                 @Override
                 public void onCheckedChanged(CompoundButton cb, boolean isChecked) {
 
                     cb = (IndeterminateCheckBox) cb;
 
-
-                    if (cb.isChecked()) {
+                    if (isChecked) {
                         currentHour.setState(true);
                         mDb.child(protocolUserDateKey).child(String.valueOf(currentHour.getMilitaryHour())).setValue(currentHour);
                     } else if(((IndeterminateCheckBox) cb).isIndeterminate()) {
                         //mDb.child(protocolUserDateKey).child(String.valueOf(currentHour.getMilitaryHour())).setValue(currentHour);
-
                     } else {
                         currentHour.setState(false);
                         mDb.child(protocolUserDateKey).child(String.valueOf(currentHour.getMilitaryHour())).setValue(currentHour);
@@ -199,14 +186,7 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
                     hourlyTasksFragment.show(mParentActivity.getSupportFragmentManager(), "HourlyTasks");
                 }
             });
-
-
         }
-
-        /*@Override
-        public int getItemCount() {
-            return mProtocol.size();
-        }*/
 
         class HourHolder extends RecyclerView.ViewHolder {
 
@@ -231,7 +211,11 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
                 hour.getMeal() != null && hour.getMeal().getState() == true ||
                 hour.getCe() != null && hour.getCe().getState() == true) {
                 allFalse = false;
-            } else {
+            }
+
+            if (hour.getJuice() != null && hour.getJuice().getState() == false ||
+                hour.getMeal() != null && hour.getMeal().getState() == false ||
+                hour.getCe() != null && hour.getCe().getState() == false) {
                 allTrue = false;
             }
 
@@ -254,33 +238,15 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
             }
 
         }
-
-
     }
-
 
     @Override
     public void onDialogPositiveClick(Bundle bundle) {
 
         Hour hour = bundle.getParcelable("hour");
 
-
-        Log.d("JUICE" + hour.getMilitaryHour(), String.valueOf(hour.getJuice().getState()));
-        if (hour.getMeal() != null) {
-            Log.d("MEAL" + hour.getMilitaryHour(), String.valueOf(hour.getMeal().getState()));
-        }
-        if (hour.getCe() != null) {
-            Log.d("CE" + hour.getMilitaryHour(), String.valueOf(hour.getCe().getState()));
-        }
-
-        for (int j = 0; j < hour.getSupplements().size(); j++) {
-            Log.d("SUPPLEMENT" + j +  + hour.getMilitaryHour(), String.valueOf(hour.getSupplements().get(j).getState()));
-        }
-
-
-
         mDatabase.child(protocolKey).child(String.valueOf(hour.getMilitaryHour())).setValue(hour);
-        //mProtocolAdapter.notifyDataSetChanged();
+        mProtocolAdapter.notifyDataSetChanged();
 
     }
 

@@ -46,10 +46,7 @@
             </intent-filter>
 
         </activity>
-        <activity android:name=".HmmActivity">
 
-
-        </activity>
     </application>
 
 </manifest>
