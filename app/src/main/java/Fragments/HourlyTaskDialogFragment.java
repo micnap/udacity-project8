@@ -25,12 +25,11 @@ public class HourlyTaskDialogFragment extends DialogFragment {
     private boolean[] checkedTasks;
     HourlyTaskDialogListener mListener;
 
-    public static HourlyTaskDialogFragment newInstance(Hour hour, int hourIndex) {
-        HourlyTaskDialogFragment fragment = new HourlyTaskDialogFragment();
+    public static HourlyTaskDialogFragment newInstance(Hour hour) {
 
+        HourlyTaskDialogFragment fragment = new HourlyTaskDialogFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable("hour", hour);
-        bundle.putInt("hourIndex", hourIndex);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -40,14 +39,13 @@ public class HourlyTaskDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         hour = getArguments().getParcelable("hour");
-        hourIndex = getArguments().getInt("hourIndex");
 
         tasks = hour.fetchHourItems();
         checkedTasks = hour.fetchHourItemsState();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.dialog_title)
-                .setMultiChoiceItems(hour.fetchHourItems(), hour.fetchHourItemsState(),
+                .setMultiChoiceItems(tasks, checkedTasks,
                         new DialogInterface.OnMultiChoiceClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which,
@@ -59,11 +57,13 @@ public class HourlyTaskDialogFragment extends DialogFragment {
                                     // Else, if the item is already in the array, remove it
                                     checkedTasks[which] = false;
                                 }
+
                             }
                         })
 
                 .setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+
                         hour.updateHourItemsState(checkedTasks);
 
                         Bundle bundle = new Bundle();

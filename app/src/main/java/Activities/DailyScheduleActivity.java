@@ -121,14 +121,12 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
 
         @Override
         public void onError(@NonNull DatabaseError error) {
-            Log.d("GRRRRR", "GRRRRR");
             super.onError(error);
-
         }
 
         @Override
         public int getItemCount() {
-            Log.d("SNAPSHOT SIZE", String.valueOf(mSnapshots.size()));
+
             return mSnapshots.isListening(this) ? mSnapshots.size() : 0;
             //return hmmList.size();
         }
@@ -154,7 +152,6 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
 
         @Override
         public void onBindViewHolder(@NonNull HourHolder holder, final int position, final Hour currentHour) {
-
 
 
             holder.mHourCheckBox.setText(currentHour.toString());
@@ -184,13 +181,8 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
                     if (cb.isChecked()) {
                         currentHour.setState(true);
                         mDb.child(protocolUserDateKey).child(String.valueOf(currentHour.getMilitaryHour())).setValue(currentHour);
-                        //String classString = task instanceof Supplement ? task.getClassName() + supplementCount : task.getClassName();
-                        //mDb.child("daily").child(mUid + "_" + new LocalDate()).child(String.valueOf(currentHour.getMilitaryHour())).child(classString).setValue(task.getType());
-                        //if (task instanceof Supplement) {
-                        //    supplementCount++;
-                        //}
                     } else if(((IndeterminateCheckBox) cb).isIndeterminate()) {
-                        mDb.child(protocolUserDateKey).child(String.valueOf(currentHour.getMilitaryHour())).setValue(currentHour);
+                        //mDb.child(protocolUserDateKey).child(String.valueOf(currentHour.getMilitaryHour())).setValue(currentHour);
 
                     } else {
                         currentHour.setState(false);
@@ -203,7 +195,7 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
 
                 @Override
                 public void onClick(View view) {
-                    DialogFragment hourlyTasksFragment = new HourlyTaskDialogFragment().newInstance(currentHour, position);
+                    DialogFragment hourlyTasksFragment = new HourlyTaskDialogFragment().newInstance(currentHour);
                     hourlyTasksFragment.show(mParentActivity.getSupportFragmentManager(), "HourlyTasks");
                 }
             });
@@ -269,30 +261,28 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
 
     @Override
     public void onDialogPositiveClick(Bundle bundle) {
+
         Hour hour = bundle.getParcelable("hour");
-        int hourIndex = bundle.getInt("hourIndex");
 
-        //updateDb(hour);
-        //mProtocolSchedule.set(hourIndex, hour);
 
+        Log.d("JUICE" + hour.getMilitaryHour(), String.valueOf(hour.getJuice().getState()));
+        if (hour.getMeal() != null) {
+            Log.d("MEAL" + hour.getMilitaryHour(), String.valueOf(hour.getMeal().getState()));
+        }
+        if (hour.getCe() != null) {
+            Log.d("CE" + hour.getMilitaryHour(), String.valueOf(hour.getCe().getState()));
+        }
+
+        for (int j = 0; j < hour.getSupplements().size(); j++) {
+            Log.d("SUPPLEMENT" + j +  + hour.getMilitaryHour(), String.valueOf(hour.getSupplements().get(j).getState()));
+        }
+
+
+
+        mDatabase.child(protocolKey).child(String.valueOf(hour.getMilitaryHour())).setValue(hour);
         //mProtocolAdapter.notifyDataSetChanged();
 
     }
-
-    private void updateDb(Hour hour) {
-        int supplementCount = 0;
-        //mDatabase.child("daily").child(user.getUid() + "_" + new LocalDate()).child(String.valueOf(hour.getMilitaryHour())).removeValue();
-        mDatabase.child("daily").child(protocolKey).child(String.valueOf(hour.getMilitaryHour())).setValue(hour);
-
-
-
-        //if (task instanceof Supplement) {
-        //    supplementCount++;
-        //}
-
-    }
-
-
 
 
     @Override

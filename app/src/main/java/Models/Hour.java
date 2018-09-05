@@ -2,6 +2,7 @@ package Models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -171,6 +172,18 @@ public class Hour implements Parcelable {
         for (int i = 0; i < supplements.size(); i++) {
             counter++;
             supplements.get(i).setState(states[counter]);
+        }
+
+        Log.d("JUICE" + militaryHour, String.valueOf(juice.getState()));
+        if (meal != null) {
+            Log.d("MEAL" + militaryHour, String.valueOf(meal.getState()));
+        }
+        if (ce != null) {
+            Log.d("CE" + militaryHour, String.valueOf(ce.getState()));
+        }
+
+        for (int j = 0; j < supplements.size(); j++) {
+            Log.d("SUPPLEMENT" + j +  + militaryHour, String.valueOf(supplements.get(j).getState()));
         }
     }
 
