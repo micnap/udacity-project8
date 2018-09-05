@@ -17,6 +17,10 @@
             android:name="Activities.DailyScheduleActivity"
             android:theme="@style/AppTheme">
         </activity>
+        <activity
+            android:name="Activities.DailyScheduleActivity2"
+            android:theme="@style/AppTheme">
+        </activity>
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
@@ -44,9 +48,10 @@
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity android:name=".GrrActivity">
 
         </activity>
-
     </application>
 
 </manifest>

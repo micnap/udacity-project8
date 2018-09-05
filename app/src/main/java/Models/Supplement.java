@@ -16,6 +16,7 @@ public class Supplement extends Task implements Parcelable {
     public static final String SUPPLEMENT_COQ10 = "CoQ10";
 
     private String type;
+    private boolean completed;
 
     public Supplement() {}
 
@@ -30,6 +31,10 @@ public class Supplement extends Task implements Parcelable {
     public void setType(String type) {
         this.type = type;
     }
+
+    public boolean isCompleted() { return completed;
+    }
+    public void setCompleted(boolean completed) { this.completed = completed; }
 
     @Override
     public String toString() {

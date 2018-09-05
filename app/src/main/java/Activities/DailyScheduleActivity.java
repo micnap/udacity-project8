@@ -138,7 +138,7 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
         }
 
         @Override
-        public void onBindViewHolder(@NonNull HourHolder holder, int position, final Hour currentHour) {
+        public void onBindViewHolder(final @NonNull HourHolder holder, final int position, final Hour currentHour) {
 
             holder.mHourCheckBox.setText(currentHour.toString());
 
@@ -148,10 +148,13 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
             String state = determineCheckboxState(currentHour);
             if (state.equals("unchecked")) {
                 holder.mHourCheckBox.setChecked(false);
+
             } else if (state.equals("checked")) {
                 holder.mHourCheckBox.setChecked(true);
+
             } else {
                 holder.mHourCheckBox.setIndeterminate(true);
+
             }
 
             //https://stackoverflow.com/questions/25646048/how-to-convert-local-time-to-am-pm-time-format-using-jodatime
@@ -167,13 +170,17 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
                     cb = (IndeterminateCheckBox) cb;
 
                     if (isChecked) {
-                        currentHour.setState(true);
+                        currentHour.setCompleted(true);
                         mDb.child(protocolUserDateKey).child(String.valueOf(currentHour.getMilitaryHour())).setValue(currentHour);
-                    } else if(((IndeterminateCheckBox) cb).isIndeterminate()) {
-                        //mDb.child(protocolUserDateKey).child(String.valueOf(currentHour.getMilitaryHour())).setValue(currentHour);
+
+                        //holder.mHourCheckBox.setChecked(true);
+                    //} else if(((IndeterminateCheckBox) cb).isIndeterminate()) {
+                    //    holder.mHourCheckBox.setIndeterminate(true);
+                    //    //mDb.child(protocolUserDateKey).child(String.valueOf(currentHour.getMilitaryHour())).setValue(currentHour);
                     } else {
-                        currentHour.setState(false);
+                        currentHour.setCompleted(false);
                         mDb.child(protocolUserDateKey).child(String.valueOf(currentHour.getMilitaryHour())).setValue(currentHour);
+                        //holder.mHourCheckBox.setChecked(false);
                     }
                 }
             });
@@ -207,27 +214,29 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
             boolean allTrue = true;
 
             // Check the state of Juice, Meal, and CE.
-            if (hour.getJuice() != null && hour.getJuice().getState() == true ||
-                hour.getMeal() != null && hour.getMeal().getState() == true ||
-                hour.getCe() != null && hour.getCe().getState() == true) {
+            if (hour.getJuice() != null && hour.getJuice().isCompleted() == true ||
+                hour.getMeal() != null && hour.getMeal().isCompleted() == true ||
+                hour.getCe() != null && hour.getCe().isCompleted() == true) {
                 allFalse = false;
             }
 
-            if (hour.getJuice() != null && hour.getJuice().getState() == false ||
-                hour.getMeal() != null && hour.getMeal().getState() == false ||
-                hour.getCe() != null && hour.getCe().getState() == false) {
+            if (hour.getJuice() != null && hour.getJuice().isCompleted() == false ||
+                hour.getMeal() != null && hour.getMeal().isCompleted() == false ||
+                hour.getCe() != null && hour.getCe().isCompleted() == false) {
                 allTrue = false;
             }
 
             // Check the state of the supplements.
             ArrayList<Supplement> supplements = hour.getSupplements();
             for (int i = 0; i < supplements.size(); i++) {
-                if (supplements.get(i).getState() == true) {
+                if (supplements.get(i).isCompleted() == true) {
                     allFalse = false;
                 } else {
                     allTrue = false;
                 }
             }
+
+            Log.d("STATE", "ALLFALSE = " + allFalse + ", ALLTRUE = " + allTrue);
 
             if (allFalse == true) {
                 return "unchecked";
@@ -236,6 +245,7 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
             } else {
                 return "indeterminant";
             }
+
 
         }
     }

@@ -8,8 +8,8 @@ public class CeCoe extends Task implements Parcelable {
     public static final String CE = "CE";
     public static final String COE = "COE";
 
-
     private String type;
+    private boolean completed;
 
     public CeCoe() {}
 
@@ -24,6 +24,10 @@ public class CeCoe extends Task implements Parcelable {
     public void setType(String type) {
         this.type = type;
     }
+
+    public boolean isCompleted() { return completed; }
+
+    public void setCompleted(boolean completed) { this.completed = completed; }
 
     @Override
     public String toString() {

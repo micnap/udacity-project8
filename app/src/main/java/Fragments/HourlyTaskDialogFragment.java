@@ -21,6 +21,7 @@ import Models.Task;
 public class HourlyTaskDialogFragment extends DialogFragment {
 
     private Hour hour;
+    private int position;
     private int hourIndex;
     private String[] tasks;
     private boolean[] checkedTasks;
@@ -31,6 +32,7 @@ public class HourlyTaskDialogFragment extends DialogFragment {
         HourlyTaskDialogFragment fragment = new HourlyTaskDialogFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable("hour", hour);
+        //bundle.putInt("position", position);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -40,8 +42,8 @@ public class HourlyTaskDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         hour = getArguments().getParcelable("hour");
+        //position = getArguments().getInt("position");
 
-        //Log.d("BUNDLE MEAL", String.valueOf(hour.getMeal().getState()));
         tasks = hour.fetchHourItems();
         checkedTasks = hour.fetchHourItemsState();
 
@@ -61,7 +63,6 @@ public class HourlyTaskDialogFragment extends DialogFragment {
                                     // Else, if the item is already in the array, remove it
                                     checkedTasks[which] = false;
                                 }
-
                             }
                         })
 
@@ -72,6 +73,7 @@ public class HourlyTaskDialogFragment extends DialogFragment {
 
                         Bundle bundle = new Bundle();
                         bundle.putParcelable("hour", hour);
+                        //bundle.putInt("position", position);
                         bundle.putInt("hourIndex", hourIndex);
 
                         mListener.onDialogPositiveClick(bundle);
@@ -82,10 +84,7 @@ public class HourlyTaskDialogFragment extends DialogFragment {
                         // User cancelled the dialog
                     }
                 });
-
-
         return builder.create();
-
     }
 
     @Override
@@ -103,7 +102,6 @@ public class HourlyTaskDialogFragment extends DialogFragment {
             throw new ClassCastException(context.toString()
                     + " must implement HourlyTaskDialogListener");
         }
-
     }
 
     public interface HourlyTaskDialogListener {

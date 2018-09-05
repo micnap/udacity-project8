@@ -10,8 +10,8 @@ public class Juice extends Task implements Parcelable {
     public static final String JUICE_CARROT = "Carrot";
     public static final String JUICE_CARROT_APPLE = "Carrot apple";
 
-
     private String type;
+    private boolean completed;
 
     public Juice() {}
 
@@ -20,6 +20,10 @@ public class Juice extends Task implements Parcelable {
     public String getType() {
         return type;
     }
+
+    public boolean isCompleted() { return completed; }
+
+    public void setCompleted(boolean completed) { this.completed = completed; }
 
     public void setType(String type) {
         this.type = type;
