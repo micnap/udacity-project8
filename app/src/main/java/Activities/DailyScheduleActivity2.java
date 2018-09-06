@@ -116,7 +116,7 @@ public class DailyScheduleActivity2 extends AppCompatActivity implements HourlyT
         @NonNull
         @Override
         public HourHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.rv_protocol_row2, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.rv_protocol_row, parent, false);
             return new HourHolder(view);
         }
 
