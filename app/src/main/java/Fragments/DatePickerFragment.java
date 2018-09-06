@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,10 +34,13 @@ public class DatePickerFragment extends DialogFragment {
 
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
+        Bundle args = getArguments();
+
         final Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
+        int year = args.getInt("Year") != 0 ? args.getInt("Year") : c.get(Calendar.YEAR);
+        int month = args.getInt("Month") != 0 ? args.getInt("Month") - 1 :  c.get(Calendar.MONTH);
+        int day = args.getInt("Day") != 0 ? args.getInt("Day") : c.get(Calendar.DAY_OF_MONTH);
+
 
         return new DatePickerDialog(getActivity(), dateSetListener, year, month, day);
     }
@@ -45,8 +49,19 @@ public class DatePickerFragment extends DialogFragment {
         new DatePickerDialog.OnDateSetListener() {
             public void onDateSet(DatePicker view, int year, int month, int day) {
                 chosenDate = view.getYear() + "-" + (view.getMonth()+1) + "-" + view.getDayOfMonth();
+                if (mListener != null) {
+                    mListener.onFragmentInteraction(chosenDate);
+                }
             }
         };
+
+    private DatePickerDialog.OnDismissListener dialogDismissListener = new DatePickerDialog.OnDismissListener() {
+
+        @Override
+        public void onDismiss(DialogInterface dialogInterface) {
+
+        }
+    };
 
 
     @Override
@@ -75,9 +90,7 @@ public class DatePickerFragment extends DialogFragment {
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
-        if (mListener != null) {
-            mListener.onFragmentInteraction(chosenDate);
-        }
+
     }
 
     public interface OnFragmentInteractionListener {

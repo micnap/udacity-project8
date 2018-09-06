@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,6 +25,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.buildware.widget.indeterm.IndeterminateCheckBox;
 import com.facebook.login.LoginManager;
@@ -76,7 +78,9 @@ public class DailyScheduleActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_daily_schedule);
 
-        if (chosenDate == null) {
+        if (getIntent().getStringExtra("query_date") != null) {
+            chosenDate = new LocalDate(getIntent().getStringExtra("query_date"));
+        } else {
             chosenDate = new LocalDate();
         }
 
@@ -115,20 +119,28 @@ public class DailyScheduleActivity extends AppCompatActivity implements
     public void onFragmentInteraction(String date) {
 
         chosenDate = new LocalDate(date);
-        path = protocolKey + chosenDate;
+        Bundle bundle = new Bundle();
+        bundle.putString("query_date", date);
+
+
+        // I have no idea why in the world I am forced to restart the activity in order to load data
+        // from a different query.  I tried for days to get the code commented out below to work,
+        // posted on StackOverflow, posted to the mentors, etc. and eventually gave up.
+        Intent intent = new Intent(this, DailyScheduleActivity.class);
+        intent.putExtra("query_date", date);
+        startActivity(intent);
+
+        // The code below clears the screen and doesn't load new day.  adapter's getItemCount returns as 0
+        // and I couldn't find a way to get it to reload the data.
+        /*path = protocolKey + chosenDate;
         Query query = mDatabase.child(path);
 
         FirebaseRecyclerOptions<Hour> options =
                 new FirebaseRecyclerOptions.Builder<Hour>()
                         .setQuery(query, Hour.class)
                         .build();
-        final FirebaseRecyclerAdapter oldAdapter = (FirebaseRecyclerAdapter) mProtocolRv.getAdapter();
         mProtocolAdapter = new ProtocolRecyclerViewAdapter(this, mDatabase, path, options);
-        mProtocolRv.setAdapter(mProtocolAdapter);
-        mProtocolAdapter.notifyDataSetChanged();
-        if (oldAdapter != null) {
-            //oldAdapter.cleanup(); - This can't run here because cleanup is not public so not sure what to do with it!
-        }
+        mProtocolRv.setAdapter(mProtocolAdapter);*/
     }
 
     private void loadData(LocalDate date) {
@@ -154,6 +166,13 @@ public class DailyScheduleActivity extends AppCompatActivity implements
         public void onDataChanged() {
             super.onDataChanged();
 
+            if (getSnapshots().size() == 0) {
+                ProtocolNonMalignant mProtocol = new ProtocolNonMalignant();
+                ArrayList<Hour> hours = mProtocol.buildProtocol();
+                for (int i = 0; i < hours.size(); i++) {
+                    mDb.child(protocolUserDateKey).child(String.valueOf(hours.get(i).getMilitaryHour())).setValue(hours.get(i));
+                }
+            }
         }
 
         @NonNull
@@ -268,22 +287,7 @@ public class DailyScheduleActivity extends AppCompatActivity implements
 
         @Override
         public int getItemCount() {
-
-/*
-            if (getSnapshots().size() == 0) {
-                ProtocolNonMalignant mProtocol = new ProtocolNonMalignant();
-                ArrayList<Hour> hours = mProtocol.buildProtocol();
-                for (int i = 0; i < hours.size(); i++) {
-                    mDb.child(protocolUserDateKey).child(String.valueOf(hours.get(i).getMilitaryHour())).setValue(hours.get(i));
-                }
-            } else {
-                // Populate the db if the current day doesn't yet exist for the current user.
-
-                return getSnapshots().size();
-
-            }*/
-            return super.getItemCount();
-
+            return getSnapshots().isListening(this) ? getSnapshots().size() : 0;
         }
     }
 
@@ -319,8 +323,15 @@ public class DailyScheduleActivity extends AppCompatActivity implements
                 return true;
 
             case R.id.action_pick_date:
+                String[] dateParts = chosenDate.toString().split("-");
+                Bundle date = new Bundle();
+                date.putInt("Year", Integer.valueOf(dateParts[0]));
+                date.putInt("Month", Integer.valueOf(dateParts[1]));
+                date.putInt("Day", Integer.valueOf(dateParts[2]));
                 DialogFragment newFragment = new DatePickerFragment();
+                newFragment.setArguments(date);
                 newFragment.show(getSupportFragmentManager(), "date picker");
+
                 return true;
 
 
@@ -340,4 +351,5 @@ public class DailyScheduleActivity extends AppCompatActivity implements
         super.onStop();
         mProtocolAdapter.stopListening();
     }
+
 }
