@@ -85,6 +85,10 @@ public class Hour implements Parcelable {
 
     public void setCompleted(boolean completed) {
         this.completed = completed;
+    }
+
+    public void setAllCompleted(boolean completed) {
+        this.completed = completed;
 
         Log.d("TIME", String.valueOf(this.militaryHour));
 
@@ -129,18 +133,18 @@ public class Hour implements Parcelable {
     public boolean[] fetchHourItemsState() {
         List<Boolean> itemsStateList = new ArrayList<Boolean>();
 
-        itemsStateList.add(juice.getState());
+        itemsStateList.add(juice.isCompleted());
 
         if (meal != null) {
-            itemsStateList.add(meal.getState());
+            itemsStateList.add(meal.isCompleted());
         }
 
         if (ce != null) {
-            itemsStateList.add(ce.getState());
+            itemsStateList.add(ce.isCompleted());
         }
 
         for (int i = 0; i < supplements.size(); i++) {
-            itemsStateList.add(supplements.get(i).getState());
+            itemsStateList.add(supplements.get(i).isCompleted());
 
         }
 
@@ -157,35 +161,27 @@ public class Hour implements Parcelable {
     public void updateHourItemsState(boolean[] states) {
 
         int counter = 0;
-        juice.setState(states[counter]);
+        Log.d("JUICE IS", String.valueOf(states[counter]));
+        juice.setCompleted(states[counter]);
 
         if (meal != null) {
             counter++;
-            meal.setState(states[counter]);
+            Log.d("MEAL IS", String.valueOf(states[counter]));
+            meal.setCompleted(states[counter]);
         }
 
         if (ce != null) {
             counter++;
-            ce.setState(states[counter]);
+            Log.d("CE IS", String.valueOf(states[counter]));
+            ce.setCompleted(states[counter]);
+            Log.d("CE IS", String.valueOf(ce.isCompleted()));
         }
 
         for (int i = 0; i < supplements.size(); i++) {
             counter++;
-            supplements.get(i).setState(states[counter]);
+            Log.d("SUPPLEMENT IS", String.valueOf(states[counter]));
+            supplements.get(i).setCompleted(states[counter]);
         }
-
-        /*
-        Log.d("JUICE" + militaryHour, String.valueOf(juice.getState()));
-        if (meal != null) {
-            Log.d("MEAL" + militaryHour, String.valueOf(meal.getState()));
-        }
-        if (ce != null) {
-            Log.d("CE" + militaryHour, String.valueOf(ce.getState()));
-        }
-
-        for (int j = 0; j < supplements.size(); j++) {
-            Log.d("SUPPLEMENT" + j +  + militaryHour, String.valueOf(supplements.get(j).getState()));
-        }*/
     }
 
     @Override
@@ -193,20 +189,20 @@ public class Hour implements Parcelable {
         String hourString = "";
 
         if (juice != null) {
-            hourString += juice.toString() + ": " + juice.getState() + "\n";
+            hourString += juice.toString() + ": " + juice.isCompleted() + "\n";
         }
 
         if (meal != null) {
-            hourString += meal.toString() + ": " + meal.getState() + "\n";
+            hourString += meal.toString() + ": " + meal.isCompleted() + "\n";
         }
 
         if (ce != null) {
-            hourString += ce.toString() + ": " + ce.getState() + "\n";
+            hourString += ce.toString() + ": " + ce.isCompleted() + "\n";
         }
 
         if (supplements != null) {
             for (Supplement supplement: supplements) {
-                hourString += supplement + ": " + supplement.getState() + "\n";
+                hourString += supplement + ": " + supplement.isCompleted() + "\n";
             }
         }
 

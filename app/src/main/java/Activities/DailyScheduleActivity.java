@@ -170,7 +170,7 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
                     cb = (IndeterminateCheckBox) cb;
 
                     if (isChecked) {
-                        currentHour.setCompleted(true);
+                        currentHour.setAllCompleted(true);
                         mDb.child(protocolUserDateKey).child(String.valueOf(currentHour.getMilitaryHour())).setValue(currentHour);
 
                         //holder.mHourCheckBox.setChecked(true);
@@ -178,7 +178,7 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
                     //    holder.mHourCheckBox.setIndeterminate(true);
                     //    //mDb.child(protocolUserDateKey).child(String.valueOf(currentHour.getMilitaryHour())).setValue(currentHour);
                     } else {
-                        currentHour.setCompleted(false);
+                        currentHour.setAllCompleted(false);
                         mDb.child(protocolUserDateKey).child(String.valueOf(currentHour.getMilitaryHour())).setValue(currentHour);
                         //holder.mHourCheckBox.setChecked(false);
                     }
@@ -236,7 +236,7 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
                 }
             }
 
-            Log.d("STATE", "ALLFALSE = " + allFalse + ", ALLTRUE = " + allTrue);
+            //Log.d("STATE", "ALLFALSE = " + allFalse + ", ALLTRUE = " + allTrue);
 
             if (allFalse == true) {
                 return "unchecked";
