@@ -1,22 +1,19 @@
-package Models;
+package com.mickeywilliamson.project8.Models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Meal extends Task implements Parcelable {
+public class CeCoe extends Task implements Parcelable {
 
-    public static final String MEAL_BREAKFAST = "Breakfast";
-    public static final String MEAL_LUNCH = "Lunch";
-    public static final String MEAL_SUPPER = "Supper";
-    public static final String MEAL_FLAXSEED_OIL = "flaxseed oil";
-    public static final String MEAL_HIPPO_SOUP = "hipp soup";
+    public static final String CE = "CE";
+    public static final String COE = "COE";
 
     private String type;
     private boolean completed;
 
-    public Meal() {}
+    public CeCoe() {}
 
-    public Meal(String type) {
+    public CeCoe(String type) {
         this.type = type;
     }
 
@@ -38,10 +35,10 @@ public class Meal extends Task implements Parcelable {
     }
 
     public String getClassName() {
-        return "Meal";
+        return "CeCoe";
     }
 
-    protected Meal(Parcel in) {
+    protected CeCoe(Parcel in) {
         type = in.readString();
     }
 
@@ -56,15 +53,15 @@ public class Meal extends Task implements Parcelable {
     }
 
     @SuppressWarnings("unused")
-    public static final Parcelable.Creator<Meal> CREATOR = new Parcelable.Creator<Meal>() {
+    public static final Parcelable.Creator<CeCoe> CREATOR = new Parcelable.Creator<CeCoe>() {
         @Override
-        public Meal createFromParcel(Parcel in) {
-            return new Meal(in);
+        public CeCoe createFromParcel(Parcel in) {
+            return new CeCoe(in);
         }
 
         @Override
-        public Meal[] newArray(int size) {
-            return new Meal[size];
+        public CeCoe[] newArray(int size) {
+            return new CeCoe[size];
         }
     };
 }

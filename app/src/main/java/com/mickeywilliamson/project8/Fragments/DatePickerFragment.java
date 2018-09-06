@@ -1,19 +1,16 @@
-package Fragments;
+package com.mickeywilliamson.project8.Fragments;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
-import android.widget.Toast;
 
 import com.mickeywilliamson.project8.R;
 
@@ -21,7 +18,7 @@ import java.util.Calendar;
 
 /**
  * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
+ * com.mickeywilliamson.project8.Activities that contain this fragment must implement the
  * {@link DatePickerFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
  */

@@ -1,4 +1,4 @@
-package Models;
+package com.mickeywilliamson.project8.Models;
 
 import android.os.Parcel;
 import android.os.Parcelable;

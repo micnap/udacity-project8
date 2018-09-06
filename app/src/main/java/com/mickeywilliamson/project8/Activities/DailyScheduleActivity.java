@@ -1,44 +1,28 @@
-package Activities;
+package com.mickeywilliamson.project8.Activities;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.text.Layout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
-import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.buildware.widget.indeterm.IndeterminateCheckBox;
 import com.facebook.login.LoginManager;
 //import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.common.ChangeEventType;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.firebase.ui.database.ObservableSnapshotArray;
-import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
@@ -51,15 +35,11 @@ import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 
-import Fragments.DatePickerFragment;
-import Fragments.HourlyTaskDialogFragment;
-import Models.CeCoe;
-import Models.Hour;
-import Models.Juice;
-import Models.Meal;
-import Models.Supplement;
-import Models.Task;
-import Models.ProtocolNonMalignant;
+import com.mickeywilliamson.project8.Fragments.DatePickerFragment;
+import com.mickeywilliamson.project8.Fragments.HourlyTaskDialogFragment;
+import com.mickeywilliamson.project8.Models.Hour;
+import com.mickeywilliamson.project8.Models.Supplement;
+import com.mickeywilliamson.project8.Models.ProtocolNonMalignant;
 
 public class DailyScheduleActivity extends AppCompatActivity implements
         HourlyTaskDialogFragment.HourlyTaskDialogListener,

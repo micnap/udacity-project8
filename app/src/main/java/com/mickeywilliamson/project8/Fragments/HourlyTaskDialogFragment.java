@@ -1,4 +1,4 @@
-package Fragments;
+package com.mickeywilliamson.project8.Fragments;
 
 import android.app.Activity;
 
@@ -9,14 +9,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 
 import com.mickeywilliamson.project8.R;
 
-import java.util.ArrayList;
-
-import Models.Hour;
-import Models.Task;
+import com.mickeywilliamson.project8.Models.Hour;
 
 public class HourlyTaskDialogFragment extends DialogFragment {
 
