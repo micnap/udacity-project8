@@ -1,4 +1,4 @@
-package Models;
+package com.mickeywilliamson.project8.Models;
 
 import java.util.ArrayList;
 

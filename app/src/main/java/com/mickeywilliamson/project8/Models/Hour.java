@@ -1,8 +1,7 @@
-package Models;
+package com.mickeywilliamson.project8.Models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;

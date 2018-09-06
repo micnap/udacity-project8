@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="Activities.LoginActivity">
+    tools:context="com.mickeywilliamson.project8.Activities.LoginActivity">
 
     <com.facebook.login.widget.LoginButton
         android:id="@+id/button_facebook_login"
