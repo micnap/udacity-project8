@@ -2,6 +2,7 @@ package Activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
@@ -48,6 +49,7 @@ import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 
+import Fragments.DatePickerFragment;
 import Fragments.HourlyTaskDialogFragment;
 import Models.CeCoe;
 import Models.Hour;
@@ -57,20 +59,29 @@ import Models.Supplement;
 import Models.Task;
 import Models.ProtocolNonMalignant;
 
-public class DailyScheduleActivity extends AppCompatActivity implements HourlyTaskDialogFragment.HourlyTaskDialogListener  {
+public class DailyScheduleActivity extends AppCompatActivity implements
+        HourlyTaskDialogFragment.HourlyTaskDialogListener,
+        DatePickerFragment.OnFragmentInteractionListener {
 
     private DatabaseReference mDatabase;
     private RecyclerView mProtocolRv;
     private String protocolKey;
+    private LocalDate chosenDate;
     private ProtocolRecyclerViewAdapter mProtocolAdapter;
+    private String path;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_daily_schedule);
 
-        protocolKey = "daily/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "_" + new LocalDate();
+        if (chosenDate == null) {
+            chosenDate = new LocalDate();
+        }
 
+        protocolKey = "daily/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "_";
+        path = protocolKey + chosenDate;
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         /*SnapshotParser<Hour> snapShotParser = new SnapshotParser<Hour>() {
@@ -85,20 +96,43 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
             }
         };*/
 
-        Query query = mDatabase.child(protocolKey);
+        Query query = mDatabase.child(path);
 
         FirebaseRecyclerOptions<Hour> options =
                 new FirebaseRecyclerOptions.Builder<Hour>()
                         .setQuery(query, Hour.class)
                         .build();
 
-
         mProtocolRv = findViewById(R.id.rv_protocol);
         mProtocolRv.setHasFixedSize(false);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
         mProtocolRv.setLayoutManager(mLayoutManager);
-        mProtocolAdapter = new ProtocolRecyclerViewAdapter(this, mDatabase, protocolKey, options);
+        mProtocolAdapter = new ProtocolRecyclerViewAdapter(this, mDatabase, path, options);
         mProtocolRv.setAdapter(mProtocolAdapter);
+    }
+
+    @Override
+    public void onFragmentInteraction(String date) {
+
+        chosenDate = new LocalDate(date);
+        path = protocolKey + chosenDate;
+        Query query = mDatabase.child(path);
+
+        FirebaseRecyclerOptions<Hour> options =
+                new FirebaseRecyclerOptions.Builder<Hour>()
+                        .setQuery(query, Hour.class)
+                        .build();
+        final FirebaseRecyclerAdapter oldAdapter = (FirebaseRecyclerAdapter) mProtocolRv.getAdapter();
+        mProtocolAdapter = new ProtocolRecyclerViewAdapter(this, mDatabase, path, options);
+        mProtocolRv.setAdapter(mProtocolAdapter);
+        mProtocolAdapter.notifyDataSetChanged();
+        if (oldAdapter != null) {
+            //oldAdapter.cleanup(); - This can't run here because cleanup is not public so not sure what to do with it!
+        }
+    }
+
+    private void loadData(LocalDate date) {
+
     }
 
     public static class ProtocolRecyclerViewAdapter extends FirebaseRecyclerAdapter<Hour, ProtocolRecyclerViewAdapter.HourHolder> {
@@ -109,25 +143,17 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
         ProtocolNonMalignant mProtocol = new ProtocolNonMalignant();
 
 
-        ProtocolRecyclerViewAdapter(DailyScheduleActivity parent, DatabaseReference db, String protocolKey, FirebaseRecyclerOptions<Hour> options) {
+        ProtocolRecyclerViewAdapter(DailyScheduleActivity parent, DatabaseReference db, String path, FirebaseRecyclerOptions<Hour> options) {
             super(options);
             mParentActivity = parent;
             mDb = db;
-            protocolUserDateKey = protocolKey;
+            protocolUserDateKey = path;
         }
 
         @Override
         public void onDataChanged() {
             super.onDataChanged();
 
-            // Populate the db if the current day doesn't yet exist for the current user.
-            if (getItemCount() == 0) {
-                ProtocolNonMalignant mProtocol = new ProtocolNonMalignant();
-                ArrayList<Hour> hours = mProtocol.buildProtocol();
-                for (int i = 0; i < hours.size(); i++) {
-                    mDb.child(protocolUserDateKey).child(String.valueOf(hours.get(i).getMilitaryHour())).setValue(hours.get(i));
-                }
-            }
         }
 
         @NonNull
@@ -140,7 +166,7 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
         @Override
         public void onBindViewHolder(final @NonNull HourHolder holder, final int position, final Hour currentHour) {
 
-            holder.mHourCheckBox.setText(currentHour.toString());
+            holder.mHourCheckBox.setText(currentHour.toString() + protocolUserDateKey);
 
             // Because recyclerview recycles the views, the checked change listener was
             // getting called multiple times when a box was checked.  This corrects that.
@@ -167,16 +193,9 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
                 @Override
                 public void onCheckedChanged(CompoundButton cb, boolean isChecked) {
 
-                    cb = (IndeterminateCheckBox) cb;
-
                     if (isChecked) {
                         currentHour.setAllCompleted(true);
                         mDb.child(protocolUserDateKey).child(String.valueOf(currentHour.getMilitaryHour())).setValue(currentHour);
-
-                        //holder.mHourCheckBox.setChecked(true);
-                    //} else if(((IndeterminateCheckBox) cb).isIndeterminate()) {
-                    //    holder.mHourCheckBox.setIndeterminate(true);
-                    //    //mDb.child(protocolUserDateKey).child(String.valueOf(currentHour.getMilitaryHour())).setValue(currentHour);
                     } else {
                         currentHour.setAllCompleted(false);
                         mDb.child(protocolUserDateKey).child(String.valueOf(currentHour.getMilitaryHour())).setValue(currentHour);
@@ -246,6 +265,26 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
 
 
         }
+
+        @Override
+        public int getItemCount() {
+
+/*
+            if (getSnapshots().size() == 0) {
+                ProtocolNonMalignant mProtocol = new ProtocolNonMalignant();
+                ArrayList<Hour> hours = mProtocol.buildProtocol();
+                for (int i = 0; i < hours.size(); i++) {
+                    mDb.child(protocolUserDateKey).child(String.valueOf(hours.get(i).getMilitaryHour())).setValue(hours.get(i));
+                }
+            } else {
+                // Populate the db if the current day doesn't yet exist for the current user.
+
+                return getSnapshots().size();
+
+            }*/
+            return super.getItemCount();
+
+        }
     }
 
     @Override
@@ -253,7 +292,7 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
 
         Hour hour = bundle.getParcelable("hour");
 
-        mDatabase.child(protocolKey).child(String.valueOf(hour.getMilitaryHour())).setValue(hour);
+        mDatabase.child(path).child(String.valueOf(hour.getMilitaryHour())).setValue(hour);
         mProtocolAdapter.notifyDataSetChanged();
 
     }
@@ -278,6 +317,12 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
 
             case R.id.action_settings:
                 return true;
+
+            case R.id.action_pick_date:
+                DialogFragment newFragment = new DatePickerFragment();
+                newFragment.show(getSupportFragmentManager(), "date picker");
+                return true;
+
 
             default:
                 return super.onOptionsItemSelected(item);
