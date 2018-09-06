@@ -90,8 +90,6 @@ public class Hour implements Parcelable {
     public void setAllCompleted(boolean completed) {
         this.completed = completed;
 
-        Log.d("TIME", String.valueOf(this.militaryHour));
-
         if (juice != null) {
             juice.setCompleted(completed);
         }
@@ -161,25 +159,20 @@ public class Hour implements Parcelable {
     public void updateHourItemsState(boolean[] states) {
 
         int counter = 0;
-        Log.d("JUICE IS", String.valueOf(states[counter]));
         juice.setCompleted(states[counter]);
 
         if (meal != null) {
             counter++;
-            Log.d("MEAL IS", String.valueOf(states[counter]));
             meal.setCompleted(states[counter]);
         }
 
         if (ce != null) {
             counter++;
-            Log.d("CE IS", String.valueOf(states[counter]));
             ce.setCompleted(states[counter]);
-            Log.d("CE IS", String.valueOf(ce.isCompleted()));
         }
 
         for (int i = 0; i < supplements.size(); i++) {
             counter++;
-            Log.d("SUPPLEMENT IS", String.valueOf(states[counter]));
             supplements.get(i).setCompleted(states[counter]);
         }
     }

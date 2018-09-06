@@ -236,8 +236,6 @@ public class DailyScheduleActivity extends AppCompatActivity implements HourlyTa
                 }
             }
 
-            //Log.d("STATE", "ALLFALSE = " + allFalse + ", ALLTRUE = " + allTrue);
-
             if (allFalse == true) {
                 return "unchecked";
             } else if (allTrue == true) {
