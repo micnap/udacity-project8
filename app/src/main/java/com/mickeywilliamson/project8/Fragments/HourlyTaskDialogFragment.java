@@ -100,6 +100,7 @@ public class HourlyTaskDialogFragment extends DialogFragment {
         }
     }
 
+
     public interface HourlyTaskDialogListener {
         void onDialogPositiveClick(Bundle bundle);
     }
