@@ -8,9 +8,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <android.support.v7.widget.RecyclerView
+    <!--<android.support.v7.widget.RecyclerView
     android:id="@+id/rv_protocol"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"/>
+    android:layout_height="match_parent"/>-->
 
+    <fragment
+        android:id="@+id/daily_schedule_fragment"
+        android:name="com.mickeywilliamson.project8.Fragments.DailyScheduleFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 </LinearLayout>
