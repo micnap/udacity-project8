@@ -85,10 +85,10 @@ public class HourlyTaskDialogFragment extends DialogFragment {
 
     @Override
     public void onAttach(Context context) {
-        //if (context instanceof Activity) {
-        //    context = (Activity) context;
+        if (context instanceof Activity) {
+            context = (Activity) context;
             super.onAttach(context);
-        //}
+        }
 
 
         try {

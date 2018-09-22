@@ -1,4 +1,4 @@
-package com.mickeywilliamson.project8;
+package com.mickeywilliamson.project8.Adapters;
 
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -21,14 +21,13 @@ import com.mickeywilliamson.project8.Fragments.HourlyTaskDialogFragment;
 import com.mickeywilliamson.project8.Models.Hour;
 import com.mickeywilliamson.project8.Models.ProtocolNonMalignant;
 import com.mickeywilliamson.project8.Models.Supplement;
-import com.mickeywilliamson.project8.dummy.DummyContent.DummyItem;
+import com.mickeywilliamson.project8.R;
 
 import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  */

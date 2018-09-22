@@ -2,10 +2,8 @@ package com.mickeywilliamson.project8.Fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -14,18 +12,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.mickeywilliamson.project8.Activities.DailyScheduleActivity;
 import com.mickeywilliamson.project8.Models.Hour;
-import com.mickeywilliamson.project8.ProtocolRecyclerViewAdapter;
+import com.mickeywilliamson.project8.Adapters.ProtocolRecyclerViewAdapter;
 import com.mickeywilliamson.project8.R;
-import com.mickeywilliamson.project8.dummy.DummyContent;
-import com.mickeywilliamson.project8.dummy.DummyContent.DummyItem;
 
 import org.joda.time.LocalDate;
 
@@ -79,18 +73,15 @@ public class DailyScheduleFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-        View view = inflater.inflate(R.layout.fragment_daily_schedule, container, false);
-
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         protocolKey = "daily/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "_";
         path = protocolKey + new LocalDate(chosenDate);
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
 
-        SnapshotParser<Hour> snapShotParser = new SnapshotParser<Hour>() {
+        /*SnapshotParser<Hour> snapShotParser = new SnapshotParser<Hour>() {
             @NonNull
             @Override
             public Hour parseSnapshot(@NonNull DataSnapshot snapshot) {
@@ -98,24 +89,33 @@ public class DailyScheduleFragment extends Fragment {
                 Hour hmm = snapshot.getValue(Hour.class);
                 return hmm;
             }
-        };
+        };*/
 
 
         Query query = mDatabase.child(path);
 
         FirebaseRecyclerOptions<Hour> options =
                 new FirebaseRecyclerOptions.Builder<Hour>()
-                        .setQuery(query, snapShotParser)
+                        .setQuery(query, Hour.class)
                         .build();
 
-        mProtocolAdapter = null;
-        mProtocolRv = view.findViewById(R.id.rv_protocol);
+
         mProtocolRv.setHasFixedSize(false);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         mProtocolRv.setLayoutManager(mLayoutManager);
         mProtocolAdapter = new ProtocolRecyclerViewAdapter((DailyScheduleActivity) getActivity(), mDatabase, path, options);
         Log.d("PATH", path);
         mProtocolRv.setAdapter(mProtocolAdapter);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        View view = inflater.inflate(R.layout.fragment_daily_schedule, container, false);
+        mProtocolRv = view.findViewById(R.id.rv_protocol);
+
+
 
         return view;
     }
@@ -130,6 +130,7 @@ public class DailyScheduleFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+        mProtocolAdapter = null;
 
     }
 
@@ -137,7 +138,7 @@ public class DailyScheduleFragment extends Fragment {
         Hour hour = bundle.getParcelable("hour");
         mDatabase.child(path).child(String.valueOf(hour.getMilitaryHour())).setValue(hour);
 
-        Query query = mDatabase.child(path);
+        /*Query query = mDatabase.child(path);
 
         FirebaseRecyclerOptions<Hour> options =
                 new FirebaseRecyclerOptions.Builder<Hour>()
@@ -145,7 +146,7 @@ public class DailyScheduleFragment extends Fragment {
                         .build();
 
         mProtocolAdapter = new ProtocolRecyclerViewAdapter((DailyScheduleActivity) getActivity(), mDatabase, path, options);
-        mProtocolRv.setAdapter(mProtocolAdapter);
+        mProtocolRv.setAdapter(mProtocolAdapter);*/
 
 
         //mProtocolAdapter.notifyDataSetChanged();
@@ -166,19 +167,13 @@ public class DailyScheduleFragment extends Fragment {
         mProtocolRv.setAdapter(mProtocolAdapter);
 
 
-        //mProtocolAdapter.notifyDataSetChanged();
+        mProtocolAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onStart() {
         super.onStart();
         mProtocolAdapter.startListening();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mProtocolAdapter.notifyDataSetChanged();
     }
 
     @Override

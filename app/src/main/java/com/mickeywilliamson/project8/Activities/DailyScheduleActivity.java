@@ -44,19 +44,12 @@ import com.mickeywilliamson.project8.Fragments.HourlyTaskDialogFragment;
 import com.mickeywilliamson.project8.Models.Hour;
 import com.mickeywilliamson.project8.Models.Supplement;
 import com.mickeywilliamson.project8.Models.ProtocolNonMalignant;
-import com.mickeywilliamson.project8.dummy.DummyContent;
 
 public class DailyScheduleActivity extends AppCompatActivity implements
         HourlyTaskDialogFragment.HourlyTaskDialogListener,
         DatePickerFragment.OnFragmentInteractionListener {
 
-    private DatabaseReference mDatabase;
-    private RecyclerView mProtocolRv;
-    private String protocolKey;
     private String chosenDate;
-
-    private String path;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +68,7 @@ public class DailyScheduleActivity extends AppCompatActivity implements
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.daily_schedule_fragment, dailyScheduleFragment.newInstance(1, chosenDate));
+        fragmentTransaction.add(R.id.daily_schedule_fragment, dailyScheduleFragment.newInstance(1, chosenDate), "DAILYSCHEDULEFRAGMENT");
         fragmentTransaction.commit();
     }
 
@@ -84,41 +77,18 @@ public class DailyScheduleActivity extends AppCompatActivity implements
     public void onFragmentInteraction(String date) {
 
         Log.d("DATE", date);
-
-        //chosenDate = new LocalDate(date);
-        //Bundle bundle = new Bundle();
-        //bundle.putString("query_date", date);
+        chosenDate = date;
 
         setTitle(date);
-        // I have no idea why in the world I am forced to restart the activity in order to load data
-        // from a different query.  I tried for days to get the code commented out below to work,
-        // posted on StackOverflow, posted to the mentors, etc. and eventually gave up.
-        //Intent intent = new Intent(this, DailyScheduleActivity.class);
-        //intent.putExtra("query_date", date);
-        //startActivity(intent);
 
-        DailyScheduleFragment dailyScheduleFragment = (DailyScheduleFragment) getSupportFragmentManager().findFragmentById(R.id.daily_schedule_fragment);
-        dailyScheduleFragment.reload2(date);
-
-        //DailyScheduleFragment dailyScheduleFragment = new DailyScheduleFragment();
-        //dailyScheduleFragment.setArguments(getIntent().getExtras());
-
-        //FragmentManager fragmentManager = getSupportFragmentManager();
-        //FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        //fragmentTransaction.add(R.id.daily_schedule_fragment, dailyScheduleFragment.newInstance(1, date));
-        //fragmentTransaction.commit();
-
-        // The code below clears the screen and doesn't load new day.  adapter's getItemCount returns as 0
-        // and I couldn't find a way to get it to reload the data.
-        /*path = protocolKey + chosenDate;
-        Query query = mDatabase.child(path);
-
-        FirebaseRecyclerOptions<Hour> options =
-                new FirebaseRecyclerOptions.Builder<Hour>()
-                        .setQuery(query, Hour.class)
-                        .build();
-        mProtocolAdapter = new ProtocolRecyclerViewAdapter(this, mDatabase, path, options);
-        mProtocolRv.setAdapter(mProtocolAdapter);*/
+        Bundle bundle = new Bundle();
+        bundle.putInt("column-count", 1);
+        bundle.putString("CHOSENDATE", date);
+        FragmentTransaction fragTransaction = getSupportFragmentManager().beginTransaction();
+        DailyScheduleFragment newFragment = new DailyScheduleFragment();
+        newFragment.setArguments(bundle);
+        fragTransaction.replace(R.id.daily_schedule_fragment, newFragment.newInstance(1, date));
+        fragTransaction.commit();
     }
 
     // Returns data from the Hourly Dialog list of tasks
@@ -128,8 +98,6 @@ public class DailyScheduleActivity extends AppCompatActivity implements
         DailyScheduleFragment dailyScheduleFragment = (DailyScheduleFragment) getSupportFragmentManager().findFragmentById(R.id.daily_schedule_fragment);
         dailyScheduleFragment.reload(bundle);
     }
-
-
 
 
     @Override
@@ -169,6 +137,4 @@ public class DailyScheduleActivity extends AppCompatActivity implements
                 return super.onOptionsItemSelected(item);
         }
     }
-
-
 }
