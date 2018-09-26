@@ -69,7 +69,7 @@ public class ProtocolRecyclerViewAdapter extends FirebaseRecyclerAdapter<Hour, P
     @Override
     public void onBindViewHolder(final @NonNull HourHolder holder, final int position, final Hour currentHour) {
 
-        holder.mHourCheckBox.setText(currentHour.toString() + protocolUserDateKey);
+        holder.mHourCheckBox.setText(currentHour.toString());
 
         // Because recyclerview recycles the views, the checked change listener was
         // getting called multiple times when a box was checked.  This corrects that.
