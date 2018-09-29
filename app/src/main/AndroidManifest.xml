@@ -14,11 +14,11 @@
 
         <!-- AppTheme style needed for indeterminant checkbox -->
         <activity
-            android:name="com.mickeywilliamson.project8.Activities.DailyScheduleActivity"
+            android:name=".Activities.DailyScheduleActivity"
             android:theme="@style/AppTheme">
         </activity>
         <activity
-            android:name="com.mickeywilliamson.project8.Activities.DailyScheduleActivity2"
+            android:name=".Activities.DailyScheduleActivity2"
             android:theme="@style/AppTheme">
         </activity>
 
@@ -42,16 +42,29 @@
                 <data android:scheme="@string/fb_login_protocol_scheme"/>
             </intent-filter>
         </activity>
-        <activity android:name="com.mickeywilliamson.project8.Activities.LoginActivity">
+        <activity android:name=".Activities.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".GrrActivity">
 
-        </activity>
+        <receiver android:name=".AppWidget.TodayScheduleAppWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/today_schedule_app_widget_info"/>
+        </receiver>
+
+        <service
+            android:name=".AppWidget.TodayScheduleService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" >
+        </service>
+
     </application>
 
 </manifest>

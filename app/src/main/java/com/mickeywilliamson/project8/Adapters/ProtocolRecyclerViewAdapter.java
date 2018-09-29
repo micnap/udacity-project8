@@ -52,7 +52,8 @@ public class ProtocolRecyclerViewAdapter extends FirebaseRecyclerAdapter<Hour, P
 
         if (getSnapshots().size() == 0) {
             ProtocolNonMalignant mProtocol = new ProtocolNonMalignant();
-            ArrayList<Hour> hours = mProtocol.buildProtocol();
+            mProtocol.buildProtocol();
+            ArrayList<Hour> hours = mProtocol.getProtocol();
             for (int i = 0; i < hours.size(); i++) {
                 mDb.child(protocolUserDateKey).child(String.valueOf(hours.get(i).getMilitaryHour())).setValue(hours.get(i));
             }
