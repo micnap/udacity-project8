@@ -47,6 +47,7 @@ public class Supplement extends Task implements Parcelable {
 
     protected Supplement(Parcel in) {
         type = in.readString();
+        completed = in.readByte() != 0x00;
     }
 
     @Override
@@ -57,6 +58,7 @@ public class Supplement extends Task implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(type);
+        dest.writeByte((byte) (completed ? 0x01 : 0x00));
     }
 
     @SuppressWarnings("unused")
