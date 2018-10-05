@@ -20,7 +20,6 @@ import com.google.firebase.database.Query;
 import com.mickeywilliamson.project8.Activities.DailyScheduleActivity;
 import com.mickeywilliamson.project8.Models.Hour;
 import com.mickeywilliamson.project8.Adapters.ProtocolRecyclerViewAdapter;
-import com.mickeywilliamson.project8.Models.Meal;
 import com.mickeywilliamson.project8.R;
 import com.mickeywilliamson.project8.Services.DatabaseUpdateIntentService;
 
@@ -106,7 +105,7 @@ public class DailyScheduleFragment extends Fragment {
         mProtocolRv.setHasFixedSize(false);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         mProtocolRv.setLayoutManager(mLayoutManager);
-        mProtocolAdapter = new ProtocolRecyclerViewAdapter((DailyScheduleActivity) getActivity(), mDatabase, path, options, getContext());
+        mProtocolAdapter = new ProtocolRecyclerViewAdapter((DailyScheduleActivity) getActivity(), mDatabase, path, options);
         Log.d("PATH", path);
         mProtocolRv.setAdapter(mProtocolAdapter);
     }
@@ -174,7 +173,7 @@ public class DailyScheduleFragment extends Fragment {
                         .setQuery(query, Hour.class)
                         .build();
 
-        mProtocolAdapter = new ProtocolRecyclerViewAdapter((DailyScheduleActivity) getActivity(), mDatabase, path, options, getContext());
+        mProtocolAdapter = new ProtocolRecyclerViewAdapter((DailyScheduleActivity) getActivity(), mDatabase, path, options);
         mProtocolRv.setAdapter(mProtocolAdapter);
 
 

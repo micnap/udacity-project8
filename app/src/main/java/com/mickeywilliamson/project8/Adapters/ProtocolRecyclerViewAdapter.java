@@ -40,7 +40,7 @@ public class ProtocolRecyclerViewAdapter extends FirebaseRecyclerAdapter<Hour, P
     ProtocolNonMalignant mProtocol = new ProtocolNonMalignant();
 
 
-    public ProtocolRecyclerViewAdapter(DailyScheduleActivity parent, DatabaseReference db, String path, FirebaseRecyclerOptions<Hour> options, Context context) {
+    public ProtocolRecyclerViewAdapter(DailyScheduleActivity parent, DatabaseReference db, String path, FirebaseRecyclerOptions<Hour> options) {
         super(options);
         mParentActivity = parent;
         mDb = db;
