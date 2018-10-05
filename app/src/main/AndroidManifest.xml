@@ -64,6 +64,10 @@
             android:name=".AppWidget.TodayScheduleService"
             android:permission="android.permission.BIND_REMOTEVIEWS" >
         </service>
+        <service
+            android:name=".Services.DatabaseUpdateIntentService"
+            android:exported="false">
+        </service>
 
     </application>
 
