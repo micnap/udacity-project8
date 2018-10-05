@@ -1,5 +1,6 @@
 package com.mickeywilliamson.project8.Adapters;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.RecyclerView;
@@ -39,7 +40,7 @@ public class ProtocolRecyclerViewAdapter extends FirebaseRecyclerAdapter<Hour, P
     ProtocolNonMalignant mProtocol = new ProtocolNonMalignant();
 
 
-    public ProtocolRecyclerViewAdapter(DailyScheduleActivity parent, DatabaseReference db, String path, FirebaseRecyclerOptions<Hour> options) {
+    public ProtocolRecyclerViewAdapter(DailyScheduleActivity parent, DatabaseReference db, String path, FirebaseRecyclerOptions<Hour> options, Context context) {
         super(options);
         mParentActivity = parent;
         mDb = db;

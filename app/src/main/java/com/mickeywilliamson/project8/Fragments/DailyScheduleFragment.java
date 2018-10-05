@@ -1,6 +1,7 @@
 package com.mickeywilliamson.project8.Fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -19,7 +20,9 @@ import com.google.firebase.database.Query;
 import com.mickeywilliamson.project8.Activities.DailyScheduleActivity;
 import com.mickeywilliamson.project8.Models.Hour;
 import com.mickeywilliamson.project8.Adapters.ProtocolRecyclerViewAdapter;
+import com.mickeywilliamson.project8.Models.Meal;
 import com.mickeywilliamson.project8.R;
+import com.mickeywilliamson.project8.Services.DatabaseUpdateIntentService;
 
 import org.joda.time.LocalDate;
 
@@ -103,7 +106,7 @@ public class DailyScheduleFragment extends Fragment {
         mProtocolRv.setHasFixedSize(false);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         mProtocolRv.setLayoutManager(mLayoutManager);
-        mProtocolAdapter = new ProtocolRecyclerViewAdapter((DailyScheduleActivity) getActivity(), mDatabase, path, options);
+        mProtocolAdapter = new ProtocolRecyclerViewAdapter((DailyScheduleActivity) getActivity(), mDatabase, path, options, getContext());
         Log.d("PATH", path);
         mProtocolRv.setAdapter(mProtocolAdapter);
     }
@@ -134,9 +137,17 @@ public class DailyScheduleFragment extends Fragment {
 
     }
 
+    // Single tasks were modified in the HourlyTaskDialogFragment.
+    // We need to send the changes for that hour to the database via an IntentService
+    // so the update happens on a background task and doesn't block the UI.
     public void reload(Bundle bundle) {
-        Hour hour = bundle.getParcelable("hour");
-        mDatabase.child(path).child(String.valueOf(hour.getMilitaryHour())).setValue(hour);
+
+        Hour hour = (Hour) bundle.getParcelable("hour");
+
+        Intent updateDbIntent = new Intent(getActivity().getApplicationContext(), DatabaseUpdateIntentService.class);
+        updateDbIntent.putExtra("HOUR", hour);
+        updateDbIntent.putExtra("PATH", path);
+        getActivity().startService(updateDbIntent);
 
         /*Query query = mDatabase.child(path);
 
@@ -163,7 +174,7 @@ public class DailyScheduleFragment extends Fragment {
                         .setQuery(query, Hour.class)
                         .build();
 
-        mProtocolAdapter = new ProtocolRecyclerViewAdapter((DailyScheduleActivity) getActivity(), mDatabase, path, options);
+        mProtocolAdapter = new ProtocolRecyclerViewAdapter((DailyScheduleActivity) getActivity(), mDatabase, path, options, getContext());
         mProtocolRv.setAdapter(mProtocolAdapter);
 
 
