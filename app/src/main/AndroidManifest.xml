@@ -62,13 +62,22 @@
 
         <service
             android:name=".AppWidget.TodayScheduleService"
-            android:permission="android.permission.BIND_REMOTEVIEWS" >
+            android:permission="android.permission.BIND_REMOTEVIEWS">
         </service>
         <service
             android:name=".Services.DatabaseUpdateIntentService"
             android:exported="false">
         </service>
 
+        <activity
+            android:name=".Activities.UserPreferenceActivity"
+            android:label="@string/title_activity_user_preference"
+            android:parentActivityName=".Activities.DailyScheduleActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.mickeywilliamson.project8.Activities.DailyScheduleActivity"/>
+        </activity>
     </application>
 
 </manifest>

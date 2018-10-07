@@ -12,9 +12,34 @@
     <string name="facebook_app_id">1636264183150470</string>
     <string name="fb_login_protocol_scheme">fb1636264183150470</string>
 
+    <string name="pref_start_date_dialog_title">Select start date:</string>
+    <string name="pref_start_date_title">Therapy start date:</string>
+    <string name="pref_protocol">Select protocol:</string>
+    <string name="pref_protocol_title">Selected protocol:</string>
+    <string name="pref_show_schedule">Show in daily schedule:</string>
+    <string name="pref_alarms">Set hourly alarms:</string>
+
+    <string name="protocol_entry_nonmalignant">Nonmalignant</string>
+    <string name="protocol_entry_full">Full</string>
+    <string name="protocol_entry_chemo">Chemo pretreated</string>
+    <string name="protocol_value_nonmalignant">nonmalignant</string>
+    <string name="protocol_value_full">full</string>
+    <string name="protocol_value_chemo">chemo</string>
+    <string name="protocol_default">@string/protocol_value_nonmalignant</string>
+
+    <string name="schedule_entry_main">Juices, CEs, Meals</string>
+    <string name="schedule_entry_supplements">Supplements</string>
+    <string name="schedule_entry_prep_tasks">Prep tasks</string>
+    <string name="schedule_value_main">main</string>
+    <string name="schedule_value_supplements">supps</string>
+    <string name="schedule_value_prep_tasks">prep</string>
+    <string-array name="empty_array"/>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
+    <string name="title_activity_preference">PreferenceActivity</string>
+    <string name="title_activity_user_preference">UserPreferenceActivity</string>
 
 </resources>
