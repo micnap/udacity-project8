@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="protocol_entries">
+        <item>@string/protocol_entry_nonmalignant</item>
+        <item>@string/protocol_entry_full</item>
+        <item>@string/protocol_entry_chemo</item>
+    </array>
+    <array name="protocol_values">
+        <item>@string/protocol_value_nonmalignant</item>
+        <item>@string/protocol_value_full</item>
+        <item>@string/protocol_value_chemo</item>
+    </array>
+
+    <array name="schedule_entries">
+        <item>@string/schedule_entry_main</item>
+        <item>@string/schedule_entry_supplements</item>
+        <item>@string/schedule_entry_prep_tasks</item>
+    </array>
+    <array name="schedule_values">
+        <item>@string/schedule_value_main</item>
+        <item>@string/schedule_value_supplements</item>
+        <item>@string/schedule_value_prep_tasks</item>
+    </array>
+    <array name="schedule_defaults">
+        <item>@string/schedule_value_main</item>
+        <item>@string/schedule_value_supplements</item>
+    </array>
+</resources>

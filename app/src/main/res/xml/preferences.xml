@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <com.mickeywilliamson.project8.Misc.DatePreference
+        android:key="pref_start_date"
+        android:title="Set start date of therapy"
+        android:defaultValue="2018-10-10"/>
+
+    <ListPreference
+        android:key="pref_protocol"
+        android:title="@string/pref_protocol_title"
+        android:summary="%s"
+        android:dialogTitle="@string/pref_protocol"
+        android:entries="@array/protocol_entries"
+        android:entryValues="@array/protocol_values"
+        android:defaultValue="@string/protocol_default" />
+
+    <com.mickeywilliamson.project8.Misc.ExtendedMultiSelectListPreference
+        android:key="pref_daily_schedule"
+        android:title="@string/pref_show_schedule"
+        android:summary="%s"
+        android:dialogTitle="@string/pref_show_schedule"
+        android:entries="@array/schedule_entries"
+        android:entryValues="@array/schedule_values"
+        android:defaultValue="@array/schedule_defaults" />
+
+
+    <CheckBoxPreference
+        android:key="pref_alarms"
+        android:title="@string/pref_alarms"
+        android:defaultValue="true" />
+</PreferenceScreen>

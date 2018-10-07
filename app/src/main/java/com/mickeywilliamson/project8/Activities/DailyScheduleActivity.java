@@ -169,11 +169,13 @@ public class DailyScheduleActivity extends AppCompatActivity implements
             case R.id.action_logout:
                 FirebaseAuth.getInstance().signOut();
                 LoginManager.getInstance().logOut();
-                Intent intent = new Intent(this, LoginActivity.class);
-                startActivity(intent);
+                Intent logoutIntent = new Intent(this, LoginActivity.class);
+                startActivity(logoutIntent);
                 return true;
 
             case R.id.action_settings:
+                Intent settingsIntent = new Intent(this, UserPreferenceActivity.class);
+                startActivity(settingsIntent);
                 return true;
 
             case R.id.action_pick_date:

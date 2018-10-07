@@ -143,6 +143,12 @@ public class DailyScheduleFragment extends Fragment {
 
         Hour hour = (Hour) bundle.getParcelable("hour");
 
+        // According to Firebase documentation (https://www.firebase.com/docs/android/guide/retrieving-data.html),
+        // "Firebase data is retrieved by attaching an asynchronous listener to a Firebase reference. The listener
+        // will be triggered once for the initial state of the data and again anytime the data changes."
+        // So, technically, using a ServiceIntent so that the data is fetched on a background thread is not
+        // needed.  However, project requirements dictate that some sort of async method must be used
+        // for fetching the data.  So I've used it here.
         Intent updateDbIntent = new Intent(getActivity().getApplicationContext(), DatabaseUpdateIntentService.class);
         updateDbIntent.putExtra("HOUR", hour);
         updateDbIntent.putExtra("PATH", path);
