@@ -3,6 +3,7 @@ package com.mickeywilliamson.project8.Fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,12 +12,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.mickeywilliamson.project8.Activities.DailyScheduleActivity;
 import com.mickeywilliamson.project8.Models.Hour;
 import com.mickeywilliamson.project8.Adapters.ProtocolRecyclerViewAdapter;
@@ -44,6 +49,7 @@ public class DailyScheduleFragment extends Fragment {
     private ProtocolRecyclerViewAdapter mProtocolAdapter;
     private String path;
     private boolean reset;
+    private ProgressBar mProgressBar;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -81,6 +87,18 @@ public class DailyScheduleFragment extends Fragment {
         protocolKey = "daily/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "_";
         path = protocolKey + new LocalDate(chosenDate);
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.child(path).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mProgressBar.setVisibility(View.GONE);
+                mProtocolRv.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
 
         /*SnapshotParser<Hour> snapShotParser = new SnapshotParser<Hour>() {
@@ -116,8 +134,9 @@ public class DailyScheduleFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_daily_schedule, container, false);
         mProtocolRv = view.findViewById(R.id.rv_protocol);
-
-
+        mProtocolRv.setVisibility(View.GONE);
+        mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+        mProgressBar.setVisibility(View.VISIBLE);
 
         return view;
     }
@@ -181,8 +200,6 @@ public class DailyScheduleFragment extends Fragment {
 
         mProtocolAdapter = new ProtocolRecyclerViewAdapter((DailyScheduleActivity) getActivity(), mDatabase, path, options);
         mProtocolRv.setAdapter(mProtocolAdapter);
-
-
         mProtocolAdapter.notifyDataSetChanged();
     }
 
