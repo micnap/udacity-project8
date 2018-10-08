@@ -84,7 +84,7 @@ public class DailyScheduleFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        protocolKey = "daily/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "_";
+        protocolKey = "daily/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/";
         path = protocolKey + new LocalDate(chosenDate);
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child(path).addListenerForSingleValueEvent(new ValueEventListener() {
