@@ -68,6 +68,9 @@ public class TodayScheduleRemoteViewsFactory implements RemoteViewsService.Remot
 
         remoteViews.setTextViewText(R.id.tasks, hour.toString());
 
+        Intent fillInIntent = new Intent();
+        remoteViews.setOnClickFillInIntent(R.id.widget_row, fillInIntent);
+
         return remoteViews;
     }
 

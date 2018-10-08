@@ -35,15 +35,21 @@ public class TodayScheduleAppWidget extends AppWidgetProvider {
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
 
-        //CharSequence widgetText = context.getString(R.string.appwidget_text);
-        // Construct the RemoteViews object
-        //Intent intent = new Intent(context, DailyScheduleActivity.class);
-        //PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.today_schedule_app_widget);
+
+        views.setTextViewText(R.id.appwidget_title, new LocalDate().toString());
+
         Intent intent = new Intent(context, TodayScheduleService.class);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
+
+        // Set up click to open app from app widget title.
+        Intent openAppIntent = new Intent(context, DailyScheduleActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, openAppIntent, 0);
+        views.setOnClickPendingIntent(R.id.appwidget_title, pendingIntent);
+
+        //Template Intent for each entry in list
+        views.setPendingIntentTemplate(R.id.appwidget_listview, pendingIntent);
 
         views.setRemoteAdapter(R.id.appwidget_listview, intent);
 
