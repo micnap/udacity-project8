@@ -36,18 +36,23 @@ import com.google.firebase.database.Query;
 import com.mickeywilliamson.project8.Fragments.DailyScheduleFragment;
 import com.mickeywilliamson.project8.R;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
+import java.util.TimeZone;
 
 import com.mickeywilliamson.project8.Fragments.DatePickerFragment;
 import com.mickeywilliamson.project8.Fragments.HourlyTaskDialogFragment;
 import com.mickeywilliamson.project8.Models.Hour;
 import com.mickeywilliamson.project8.Models.Supplement;
 import com.mickeywilliamson.project8.Models.ProtocolNonMalignant;
+
+import net.danlew.android.joda.JodaTimeAndroid;
 
 public class DailyScheduleActivity extends AppCompatActivity implements
         HourlyTaskDialogFragment.HourlyTaskDialogListener,
@@ -64,7 +69,14 @@ public class DailyScheduleActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_daily_schedule);
 
-        todayDate = new LocalDate();
+        JodaTimeAndroid.init(this);
+
+        // Get current moment in default time zone
+        DateTime dt = new DateTime();
+        // Translate to user's local timezone
+        DateTime dateTimeLocal = dt.withZone(DateTimeZone.forID(DateTimeZone.forTimeZone(TimeZone.getDefault()).toString()));
+
+        todayDate = new LocalDate(dateTimeLocal.getYear(), dateTimeLocal.getMonthOfYear(), dateTimeLocal.getDayOfMonth());
 
         if (getIntent().getStringExtra("query_date") != null) {
             Log.d("QUERY DATE", getIntent().getStringExtra("query_date"));
