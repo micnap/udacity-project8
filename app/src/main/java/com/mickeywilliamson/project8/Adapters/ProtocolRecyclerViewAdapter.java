@@ -1,6 +1,7 @@
 package com.mickeywilliamson.project8.Adapters;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -92,18 +93,17 @@ public class ProtocolRecyclerViewAdapter extends FirebaseRecyclerAdapter<Hour, P
         DateTimeFormatter fmt = DateTimeFormat.forPattern("h:mm a");
         holder.mHour.setText(fmt.print(time));
 
-        holder.mHourCheckBox.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener() {
-
+        holder.mHourCheckBox.setOnStateChangedListener(new IndeterminateCheckBox.OnStateChangedListener() {
             @Override
-            public void onCheckedChanged(CompoundButton cb, boolean isChecked) {
-
-                if (isChecked) {
+            public void onStateChanged(IndeterminateCheckBox indeterminateCheckBox, @Nullable Boolean state) {
+                if (state == null) {  // indeterminate state
+                    // do nothing
+                } else if (state) {  // checked state
                     currentHour.setAllCompleted(true);
                     mDb.child(protocolUserDateKey).child(String.valueOf(currentHour.getMilitaryHour())).setValue(currentHour);
-                } else {
+                } else {  // unchecked state
                     currentHour.setAllCompleted(false);
                     mDb.child(protocolUserDateKey).child(String.valueOf(currentHour.getMilitaryHour())).setValue(currentHour);
-                    //holder.mHourCheckBox.setChecked(false);
                 }
             }
         });
