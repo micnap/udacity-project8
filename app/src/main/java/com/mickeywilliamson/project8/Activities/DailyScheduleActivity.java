@@ -117,7 +117,9 @@ public class DailyScheduleActivity extends AppCompatActivity implements
                     setTitle("Today" + getDayOfTherapy(todayDate));
                 } else {
                     LocalDate scheduleDate = new LocalDate(chosenDate).plusDays(position - 5);
-                    setTitle(scheduleDate.toString() + getDayOfTherapy(scheduleDate));
+                    DateTimeFormatter formatter = DateTimeFormat.forPattern("MMM. dd, YYYY");
+                    String dateString = formatter.print(scheduleDate);
+                    setTitle(dateString + getDayOfTherapy(scheduleDate));
                 }
 
             }
