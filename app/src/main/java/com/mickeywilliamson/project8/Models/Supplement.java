@@ -7,6 +7,7 @@ public class Supplement extends Task implements Parcelable {
 
     public static final String SUPPLEMENT_NIACIN = "niacin";
     public static final String SUPPLEMENT_ACIDOL = "acidol";
+    public static final String SUPPLEMENT_FLAX = "flax";
     public static final String SUPPLEMENT_POTASSIUM = "potassium";
     public static final String SUPPLEMENT_LUGOLS = "Lugol's";
     public static final String SUPPLEMENT_THYROID = "thyroid";
