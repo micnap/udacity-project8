@@ -73,21 +73,6 @@ public class ProtocolRecyclerViewAdapter extends FirebaseRecyclerAdapter<Hour, P
 
         holder.mHourCheckBox.setText(currentHour.toString());
 
-        // Because recyclerview recycles the views, the checked change listener was
-        // getting called multiple times when a box was checked.  This corrects that.
-        holder.mHourCheckBox.setOnCheckedChangeListener (null);
-        String state = determineCheckboxState(currentHour);
-        if (state.equals("unchecked")) {
-            holder.mHourCheckBox.setChecked(false);
-
-        } else if (state.equals("checked")) {
-            holder.mHourCheckBox.setChecked(true);
-
-        } else {
-            holder.mHourCheckBox.setIndeterminate(true);
-
-        }
-
         //https://stackoverflow.com/questions/25646048/how-to-convert-local-time-to-am-pm-time-format-using-jodatime
         LocalTime time = new LocalTime(currentHour.getMilitaryHour(), 0);
         DateTimeFormatter fmt = DateTimeFormat.forPattern("h:mm a");
@@ -107,6 +92,21 @@ public class ProtocolRecyclerViewAdapter extends FirebaseRecyclerAdapter<Hour, P
                 }
             }
         });
+
+        // Because recyclerview recycles the views, the checked change listener was
+        // getting called multiple times when a box was checked.  This corrects that.
+        holder.mHourCheckBox.setOnCheckedChangeListener (null);
+        String state = determineCheckboxState(currentHour);
+        if (state.equals("unchecked")) {
+            holder.mHourCheckBox.setChecked(false);
+
+        } else if (state.equals("checked")) {
+            holder.mHourCheckBox.setChecked(true);
+
+        } else {
+            holder.mHourCheckBox.setIndeterminate(true);
+
+        }
 
         holder.mOpenTasks.setOnClickListener(new View.OnClickListener() {
 
