@@ -41,6 +41,14 @@ public class Hour implements Parcelable {
         this.supplements = supplements;
     }
 
+    public Hour(int militaryHour, CeCoe ce) {
+        this.militaryHour = militaryHour;
+        this.juice = juice;
+        this.meal = meal;
+        this.ce = ce;
+        this.supplements = supplements;
+    }
+
     public int getMilitaryHour() {
         return militaryHour;
     }

@@ -20,6 +20,8 @@ import com.mickeywilliamson.project8.Activities.DailyScheduleActivity;
 
 import com.mickeywilliamson.project8.Fragments.HourlyTaskDialogFragment;
 import com.mickeywilliamson.project8.Models.Hour;
+import com.mickeywilliamson.project8.Models.ProtocolChemo;
+import com.mickeywilliamson.project8.Models.ProtocolFull;
 import com.mickeywilliamson.project8.Models.ProtocolNonMalignant;
 import com.mickeywilliamson.project8.Models.Supplement;
 import com.mickeywilliamson.project8.R;
@@ -52,9 +54,9 @@ public class ProtocolRecyclerViewAdapter extends FirebaseRecyclerAdapter<Hour, P
         super.onDataChanged();
 
         if (getSnapshots().size() == 0) {
-            ProtocolNonMalignant mProtocol = new ProtocolNonMalignant();
-            mProtocol.buildProtocol();
-            ArrayList<Hour> hours = mProtocol.getProtocol();
+            ProtocolChemo mProtocol = new ProtocolChemo();
+            //mProtocol.buildProtocol();
+            ArrayList<Hour> hours = mProtocol.getSchedule();
             for (int i = 0; i < hours.size(); i++) {
                 mDb.child(protocolUserDateKey).child(String.valueOf(hours.get(i).getMilitaryHour())).setValue(hours.get(i));
             }
@@ -73,8 +75,10 @@ public class ProtocolRecyclerViewAdapter extends FirebaseRecyclerAdapter<Hour, P
 
         holder.mHourCheckBox.setText(currentHour.toString());
 
+        int minutes = currentHour.getMilitaryHour() > 23 ? 30 : 0;
+
         //https://stackoverflow.com/questions/25646048/how-to-convert-local-time-to-am-pm-time-format-using-jodatime
-        LocalTime time = new LocalTime(currentHour.getMilitaryHour(), 0);
+        LocalTime time = new LocalTime(currentHour.getMilitaryHour(), minutes);
         DateTimeFormatter fmt = DateTimeFormat.forPattern("h:mm a");
         holder.mHour.setText(fmt.print(time));
 
@@ -150,14 +154,17 @@ public class ProtocolRecyclerViewAdapter extends FirebaseRecyclerAdapter<Hour, P
         }
 
         // Check the state of the supplements.
-        ArrayList<Supplement> supplements = hour.getSupplements();
-        for (int i = 0; i < supplements.size(); i++) {
-            if (supplements.get(i).isCompleted() == true) {
-                allFalse = false;
-            } else {
-                allTrue = false;
+        if (hour.getSupplements() != null){
+            ArrayList<Supplement> supplements = hour.getSupplements();
+            for (int i = 0; i < supplements.size(); i++) {
+                if (supplements.get(i).isCompleted() == true) {
+                    allFalse = false;
+                } else {
+                    allTrue = false;
+                }
             }
         }
+
 
         if (allFalse == true) {
             return "unchecked";

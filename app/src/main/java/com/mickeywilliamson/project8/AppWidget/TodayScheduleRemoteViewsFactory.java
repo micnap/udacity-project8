@@ -33,8 +33,8 @@ public class TodayScheduleRemoteViewsFactory implements RemoteViewsService.Remot
     public TodayScheduleRemoteViewsFactory(Context context, Intent intent) {
         mContext = context;
         ProtocolNonMalignant protocol = new ProtocolNonMalignant();
-        protocol.buildProtocol();
-        mHours = protocol.getProtocol();
+        //protocol.buildProtocol();
+        mHours = protocol.getSchedule();
     }
 
     @Override

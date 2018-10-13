@@ -2,18 +2,19 @@ package com.mickeywilliamson.project8.Models;
 
 import java.util.ArrayList;
 
-public class ProtocolNonMalignant extends Protocol {
+public class ProtocolChemo extends Protocol {
 
-    public ProtocolNonMalignant() {
+    public ProtocolChemo() {
         buildProtocol();
     }
 
     public ArrayList<Hour> buildProtocol() {
 
-        setType(PROTOCOL_NONMALIGNANT);
+        setType(PROTOCOL_CHEMO);
 
         ArrayList<Supplement> supplements = new ArrayList<>();
 
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_ACIDOL));
         supplements.add(new Supplement(Supplement.SUPPLEMENT_POTASSIUM));
         supplements.add(new Supplement(Supplement.SUPPLEMENT_LUGOLS));
         supplements.add(new Supplement(Supplement.SUPPLEMENT_THYROID));
@@ -32,12 +33,14 @@ public class ProtocolNonMalignant extends Protocol {
         supplements.clear();
         supplements.add(new Supplement(Supplement.SUPPLEMENT_POTASSIUM));
         supplements.add(new Supplement(Supplement.SUPPLEMENT_NIACIN));
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_LUGOLS));
         HOUR_10 = new Hour(10, new Juice(Juice.JUICE_CARROT_APPLE), (ArrayList<Supplement>) supplements.clone());
         schedule.add(HOUR_10);
 
         // TODO: Add injection every other day - need to get day of year and do on even days
         supplements.clear();
         supplements.add(new Supplement(Supplement.SUPPLEMENT_LIVER));
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_INJECTION));
         HOUR_11 = new Hour(11, new Juice(Juice.JUICE_CARROT), (ArrayList<Supplement>) supplements.clone());
         schedule.add(HOUR_11);
 
@@ -47,6 +50,7 @@ public class ProtocolNonMalignant extends Protocol {
         schedule.add(HOUR_12);
 
         supplements.clear();
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_FLAX));
         supplements.add(new Supplement(Supplement.SUPPLEMENT_ACIDOL));
         supplements.add(new Supplement(Supplement.SUPPLEMENT_POTASSIUM));
         supplements.add(new Supplement(Supplement.SUPPLEMENT_LUGOLS));
@@ -66,6 +70,7 @@ public class ProtocolNonMalignant extends Protocol {
         supplements.add(new Supplement(Supplement.SUPPLEMENT_POTASSIUM));
         supplements.add(new Supplement(Supplement.SUPPLEMENT_NIACIN));
         supplements.add(new Supplement(Supplement.SUPPLEMENT_PANCREATIN));
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_LUGOLS));
         HOUR_17 = new Hour(17, new Juice(Juice.JUICE_CARROT_APPLE), (ArrayList<Supplement>) supplements.clone());
         schedule.add(HOUR_17);
 
@@ -75,6 +80,7 @@ public class ProtocolNonMalignant extends Protocol {
         schedule.add(HOUR_18);
 
         supplements.clear();
+        supplements.add(new Supplement(Supplement.SUPPLEMENT_FLAX));
         supplements.add(new Supplement(Supplement.SUPPLEMENT_ACIDOL));
         supplements.add(new Supplement(Supplement.SUPPLEMENT_POTASSIUM));
         supplements.add(new Supplement(Supplement.SUPPLEMENT_LUGOLS));
