@@ -1,6 +1,8 @@
 package com.mickeywilliamson.project8.Activities;
 
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -38,6 +40,7 @@ import com.mickeywilliamson.project8.R;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
@@ -85,7 +88,7 @@ public class DailyScheduleActivity extends AppCompatActivity implements
 
             chosenDate = todayDate.toString();
             Log.d("CHOSEN DATE", "CHOSEN DATE");
-            setTitle("Today");
+            setTitle("Today" + getDayOfTherapy(todayDate));
 
         }
 
@@ -109,10 +112,12 @@ public class DailyScheduleActivity extends AppCompatActivity implements
 
             @Override
             public void onPageSelected(int position) {
+
                 if (position == 5 && todayDate.toString().equals(chosenDate)) {
-                    setTitle("Today");
+                    setTitle("Today" + getDayOfTherapy(todayDate));
                 } else {
-                    setTitle(new LocalDate(chosenDate).plusDays(position - 5).toString());
+                    LocalDate scheduleDate = new LocalDate(chosenDate).plusDays(position - 5);
+                    setTitle(scheduleDate.toString() + getDayOfTherapy(scheduleDate));
                 }
 
             }
@@ -134,13 +139,32 @@ public class DailyScheduleActivity extends AppCompatActivity implements
 
     }
 
+    private String getDayOfTherapy(LocalDate scheduleDate) {
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(DailyScheduleActivity.this);
+        String startDateString = prefs.getString("pref_start_date", null);
+
+        if (startDateString == null) {
+            return "";
+        }
+
+        LocalDate startDate = new LocalDate(startDateString);
+        int days = Days.daysBetween(startDate, scheduleDate).getDays();
+
+        if (days >= 0) {
+            return " (Day " + days + ")";
+        } else {
+            return "";
+        }
+    }
+
     // Returns data from the date picker dialog.
     @Override
     public void onFragmentInteraction(String date) {
 
         chosenDate = date;
 
-        setTitle(chosenDate);
+        //setTitle(chosenDate);
 
         /*Bundle bundle = new Bundle();
         bundle.putInt("column-count", 1);
