@@ -1,11 +1,17 @@
 package com.mickeywilliamson.project8.Models;
 
+import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
+
+import com.mickeywilliamson.project8.Activities.DailyScheduleActivity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Hour implements Parcelable {
 
@@ -185,23 +191,22 @@ public class Hour implements Parcelable {
         }
     }
 
-    @Override
-    public String toString() {
+    public String toString(Set<String> piecestoShow) {
         String hourString = "";
 
-        if (juice != null) {
+        if (juice != null && piecestoShow.contains("juices")) {
             hourString += juice.toString() + ": " + juice.isCompleted() + "\n";
         }
 
-        if (meal != null) {
+        if (meal != null && piecestoShow.contains("meals")) {
             hourString += meal.toString() + ": " + meal.isCompleted() + "\n";
         }
 
-        if (ce != null) {
+        if (ce != null && piecestoShow.contains("ces")) {
             hourString += ce.toString() + ": " + ce.isCompleted() + "\n";
         }
 
-        if (supplements != null) {
+        if (supplements != null && piecestoShow.contains("supps")) {
             for (Supplement supplement: supplements) {
                 hourString += supplement + ": " + supplement.isCompleted() + "\n";
             }
