@@ -1,9 +1,12 @@
 package com.mickeywilliamson.project8.Adapters;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +34,8 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  */
@@ -73,7 +78,12 @@ public class ProtocolRecyclerViewAdapter extends FirebaseRecyclerAdapter<Hour, P
     @Override
     public void onBindViewHolder(final @NonNull HourHolder holder, final int position, final Hour currentHour) {
 
-        holder.mHourCheckBox.setText(currentHour.toString());
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mParentActivity.getApplicationContext());
+        Set<String> showMainProtocol = prefs.getStringSet("pref_daily_schedule", new HashSet<String>());
+        Log.d("DAILYSCHEDULE", showMainProtocol.toString());
+
+        holder.mHourCheckBox.setText(currentHour.toString(showMainProtocol));
 
         int minutes = currentHour.getMilitaryHour() > 23 ? 30 : 0;
 

@@ -12,17 +12,23 @@
     </array>
 
     <array name="schedule_entries">
-        <item>@string/schedule_entry_main</item>
+        <item>@string/schedule_entry_juices</item>
+        <item>@string/schedule_entry_ces</item>
+        <item>@string/schedule_entry_meals</item>
         <item>@string/schedule_entry_supplements</item>
-        <item>@string/schedule_entry_prep_tasks</item>
+        <!--<item>@string/schedule_entry_prep_tasks</item>-->
     </array>
     <array name="schedule_values">
-        <item>@string/schedule_value_main</item>
+        <item>@string/schedule_value_juices</item>
+        <item>@string/schedule_value_ces</item>
+        <item>@string/schedule_value_meals</item>
         <item>@string/schedule_value_supplements</item>
-        <item>@string/schedule_value_prep_tasks</item>
+        <!--<item>@string/schedule_value_prep_tasks</item>-->
     </array>
     <array name="schedule_defaults">
-        <item>@string/schedule_value_main</item>
+        <item>@string/schedule_value_juices</item>
+        <item>@string/schedule_value_ces</item>
+        <item>@string/schedule_value_meals</item>
         <item>@string/schedule_value_supplements</item>
     </array>
 </resources>
