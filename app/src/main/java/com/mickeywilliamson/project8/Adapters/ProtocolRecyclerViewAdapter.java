@@ -23,6 +23,7 @@ import com.mickeywilliamson.project8.Activities.DailyScheduleActivity;
 
 import com.mickeywilliamson.project8.Fragments.HourlyTaskDialogFragment;
 import com.mickeywilliamson.project8.Models.Hour;
+import com.mickeywilliamson.project8.Models.Protocol;
 import com.mickeywilliamson.project8.Models.ProtocolChemo;
 import com.mickeywilliamson.project8.Models.ProtocolFull;
 import com.mickeywilliamson.project8.Models.ProtocolNonMalignant;
@@ -44,7 +45,7 @@ public class ProtocolRecyclerViewAdapter extends FirebaseRecyclerAdapter<Hour, P
     private final DailyScheduleActivity mParentActivity;
     private DatabaseReference mDb;
     private String protocolUserDateKey;
-    ProtocolNonMalignant mProtocol = new ProtocolNonMalignant();
+    Protocol mProtocol;
 
 
     public ProtocolRecyclerViewAdapter(DailyScheduleActivity parent, DatabaseReference db, String path, FirebaseRecyclerOptions<Hour> options) {
@@ -59,7 +60,16 @@ public class ProtocolRecyclerViewAdapter extends FirebaseRecyclerAdapter<Hour, P
         super.onDataChanged();
 
         if (getSnapshots().size() == 0) {
-            ProtocolChemo mProtocol = new ProtocolChemo();
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mParentActivity.getApplicationContext());
+            String protocolVersion = prefs.getString("pref_protocol", null);
+            if (protocolVersion.equals(Protocol.PROTOCOL_FULL)) {
+                mProtocol = new ProtocolFull();
+            } else if (protocolVersion.equals(Protocol.PROTOCOL_CHEMO)) {
+                mProtocol = new ProtocolChemo();
+            } else {
+                mProtocol = new ProtocolNonMalignant();
+            }
+
             //mProtocol.buildProtocol();
             ArrayList<Hour> hours = mProtocol.getSchedule();
             for (int i = 0; i < hours.size(); i++) {
@@ -85,10 +95,8 @@ public class ProtocolRecyclerViewAdapter extends FirebaseRecyclerAdapter<Hour, P
 
         holder.mHourCheckBox.setText(currentHour.toString(showMainProtocol));
 
-        int minutes = currentHour.getMilitaryHour() > 23 ? 30 : 0;
-
-        //https://stackoverflow.com/questions/25646048/how-to-convert-local-time-to-am-pm-time-format-using-jodatime
-        LocalTime time = new LocalTime(currentHour.getMilitaryHour(), minutes);
+        // Derived from https://stackoverflow.com/questions/25646048/how-to-convert-local-time-to-am-pm-time-format-using-jodatime
+        LocalTime time = new LocalTime(currentHour.getMilitaryHour() / 100, currentHour.getMilitaryHour() % 100);
         DateTimeFormatter fmt = DateTimeFormat.forPattern("h:mm a");
         holder.mHour.setText(fmt.print(time));
 
