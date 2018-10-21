@@ -3,6 +3,7 @@ package com.mickeywilliamson.project8.Fragments;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.preference.ListPreference;
 import android.preference.MultiSelectListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -15,18 +16,18 @@ import android.widget.Toast;
 import com.mickeywilliamson.project8.Activities.UserPreferenceActivity;
 import com.mickeywilliamson.project8.Misc.DatePreference;
 import com.mickeywilliamson.project8.Misc.ExtendedMultiSelectListPreference;
+import com.mickeywilliamson.project8.Models.Protocol;
 import com.mickeywilliamson.project8.R;
 
 import java.lang.reflect.Field;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
  *
  */
 public class UserPreferenceActivityFragment extends PreferenceFragment {
-
-    ExtendedMultiSelectListPreference mslPref;
 
     public UserPreferenceActivityFragment() {}
 
@@ -39,7 +40,7 @@ public class UserPreferenceActivityFragment extends PreferenceFragment {
 
         //scheduleOptionsPref = (ExtendedMultiSelectListPreference) findPreference("pref_")
 
-        mslPref = (ExtendedMultiSelectListPreference) findPreference("pref_daily_schedule");
+        final ExtendedMultiSelectListPreference mslPref = (ExtendedMultiSelectListPreference) findPreference("pref_daily_schedule");
         mslPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object o) {
@@ -57,5 +58,15 @@ public class UserPreferenceActivityFragment extends PreferenceFragment {
                 return true;
             }
         });
+
+        final ListPreference protocolPreference = (ListPreference) findPreference("pref_protocol");
+        protocolPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object o) {
+                return true;
+            }
+        });
     }
+
+
 }
