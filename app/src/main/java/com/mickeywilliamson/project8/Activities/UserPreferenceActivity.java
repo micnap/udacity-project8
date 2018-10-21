@@ -6,10 +6,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.mickeywilliamson.project8.R;
+
+import java.util.Locale;
 
 import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences;
 import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferencesContextWrapper;
@@ -65,7 +68,7 @@ public class UserPreferenceActivity extends AppCompatActivity implements Firebas
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 
     }
 
