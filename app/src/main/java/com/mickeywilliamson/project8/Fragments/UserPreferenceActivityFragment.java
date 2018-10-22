@@ -2,6 +2,7 @@ package com.mickeywilliamson.project8.Fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.preference.ListPreference;
 import android.preference.MultiSelectListPreference;
@@ -13,6 +14,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.mickeywilliamson.project8.Activities.DailyScheduleActivity;
 import com.mickeywilliamson.project8.Activities.UserPreferenceActivity;
 import com.mickeywilliamson.project8.Misc.DatePreference;
 import com.mickeywilliamson.project8.Misc.ExtendedMultiSelectListPreference;
@@ -28,6 +30,8 @@ import java.util.Set;
  *
  */
 public class UserPreferenceActivityFragment extends PreferenceFragment {
+
+    private OnPrefChangedListener mListener;
 
     public UserPreferenceActivityFragment() {}
 
@@ -45,6 +49,9 @@ public class UserPreferenceActivityFragment extends PreferenceFragment {
             @Override
             public boolean onPreferenceChange(Preference preference, Object o) {
                 mslPref.setSummary(getResources(), o);
+                if (mListener != null) {
+                    mListener.onPrefChanged(true);
+                }
                 return true;
             }
         });
@@ -55,6 +62,9 @@ public class UserPreferenceActivityFragment extends PreferenceFragment {
             public boolean onPreferenceChange(Preference preference,Object newValue) {
                 //your code to change values.
                 startDatePref.setSummary((String) newValue);
+                if (mListener != null) {
+                    mListener.onPrefChanged(true);
+                }
                 return true;
             }
         });
@@ -63,10 +73,28 @@ public class UserPreferenceActivityFragment extends PreferenceFragment {
         protocolPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object o) {
+                if (mListener != null) {
+                    mListener.onPrefChanged(true);
+                }
                 return true;
             }
         });
     }
 
+    // FirebaseSharedPreferences listener is borked.  Implementing my own.
+    public interface OnPrefChangedListener {
+        void onPrefChanged(boolean hasChanged);
+    }
 
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnPrefChangedListener) {
+            mListener = (OnPrefChangedListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnPrefChangedListener");
+        }
+    }
 }

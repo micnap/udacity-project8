@@ -1,6 +1,8 @@
 package com.mickeywilliamson.project8.Activities;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,6 +12,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.mickeywilliamson.project8.Fragments.UserPreferenceActivityFragment;
 import com.mickeywilliamson.project8.R;
 
 import java.util.Locale;
@@ -18,10 +21,14 @@ import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences;
 import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferencesContextWrapper;
 
 
-public class UserPreferenceActivity extends AppCompatActivity implements FirebaseAuth.AuthStateListener, SharedPreferences.OnSharedPreferenceChangeListener {
+public class UserPreferenceActivity extends AppCompatActivity implements
+        FirebaseAuth.AuthStateListener,
+        SharedPreferences.OnSharedPreferenceChangeListener,
+        UserPreferenceActivityFragment.OnPrefChangedListener{
 
     private static final String TAG = "prefactivity";
     private SharedFirebasePreferences mPreferences;
+    private boolean hasChanged = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,5 +102,18 @@ public class UserPreferenceActivity extends AppCompatActivity implements Firebas
                 }
             });
         }
+    }
+
+    @Override
+    public void onPrefChanged(boolean hasChanged) {
+        Log.d("HASCHANGED", String.valueOf(hasChanged));
+        Intent intent = new Intent(this, DailyScheduleActivity.class);
+        intent.putExtra("has_changed", hasChanged);
+        setResult(Activity.RESULT_OK, intent);
+        //startActivity(intent);
+        //finish();
+        //mPagerAdapter = new DailySchedulePagerAdapter(getSupportFragmentManager());
+        //mPager.setAdapter(mPagerAdapter);
+        //mPager.setCurrentItem(5);
     }
 }

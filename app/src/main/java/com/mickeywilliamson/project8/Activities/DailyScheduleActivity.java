@@ -36,6 +36,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.mickeywilliamson.project8.Fragments.DailyScheduleFragment;
+import com.mickeywilliamson.project8.Fragments.UserPreferenceActivityFragment;
 import com.mickeywilliamson.project8.R;
 
 import org.joda.time.DateTime;
@@ -151,7 +152,7 @@ public class DailyScheduleActivity extends AppCompatActivity implements
         }
 
         LocalDate startDate = new LocalDate(startDateString);
-        int days = Days.daysBetween(startDate, scheduleDate).getDays();
+        int days = Days.daysBetween(startDate, scheduleDate).getDays() + 1;
 
         if (days >= 0) {
             return " (Day " + days + ")";
@@ -213,7 +214,7 @@ public class DailyScheduleActivity extends AppCompatActivity implements
 
             case R.id.action_settings:
                 Intent settingsIntent = new Intent(this, UserPreferenceActivity.class);
-                startActivity(settingsIntent);
+                startActivityForResult(settingsIntent, 2451);
                 return true;
 
             case R.id.action_pick_date:
@@ -234,9 +235,21 @@ public class DailyScheduleActivity extends AppCompatActivity implements
         }
     }
 
+
+
     private class DailySchedulePagerAdapter extends FragmentStatePagerAdapter {
+
+        boolean prefHasChanged;
+
         public DailySchedulePagerAdapter(FragmentManager fm) {
             super(fm);
+            prefHasChanged = false;
+        }
+
+        public DailySchedulePagerAdapter(FragmentManager fm, boolean prefHasChanged) {
+            super(fm);
+            this.prefHasChanged = prefHasChanged;
+            Log.d("PREFCHANGEDPAGEADAPTER", String.valueOf(prefHasChanged));
         }
 
         @Override
@@ -244,7 +257,7 @@ public class DailyScheduleActivity extends AppCompatActivity implements
 
             LocalDate date = new LocalDate(chosenDate).plusDays(position - 5);
             DailyScheduleFragment fragment = new DailyScheduleFragment();
-            return fragment.newInstance(1, date.toString());
+            return fragment.newInstance(1, date.toString(), prefHasChanged);
 
         }
 
@@ -302,4 +315,27 @@ public class DailyScheduleActivity extends AppCompatActivity implements
             }
         }
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == 2451) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+
+                boolean hasChanged = data.getBooleanExtra("has_changed", false);
+                Log.d("ONACTIVITYRESULT", String.valueOf(hasChanged));
+                if (hasChanged) {
+                    mPagerAdapter = new DailySchedulePagerAdapter(getSupportFragmentManager(), true);
+                    mPager.setAdapter(mPagerAdapter);
+                    mPager.setCurrentItem(5);
+                }
+                // The user picked a contact.
+                // The Intent's data Uri identifies which contact was selected.
+
+                // Do something with the contact here (bigger example below)
+            }
+        }
+    }
+
 }

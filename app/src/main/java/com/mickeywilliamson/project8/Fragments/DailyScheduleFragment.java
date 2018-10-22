@@ -2,7 +2,9 @@ package com.mickeywilliamson.project8.Fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -50,6 +53,7 @@ public class DailyScheduleFragment extends Fragment {
     private String path;
     private boolean reset;
     private ProgressBar mProgressBar;
+    private boolean prefHasChanged;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -60,11 +64,12 @@ public class DailyScheduleFragment extends Fragment {
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static DailyScheduleFragment newInstance(int columnCount, String chosenDateString) {
+    public static DailyScheduleFragment newInstance(int columnCount, String chosenDateString, boolean prefHasChanged) {
         DailyScheduleFragment fragment = new DailyScheduleFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         args.putString("CHOSENDATE", chosenDateString);
+        args.putBoolean("pref_changed", prefHasChanged);
         fragment.setArguments(args);
         return fragment;
     }
@@ -76,6 +81,7 @@ public class DailyScheduleFragment extends Fragment {
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
             chosenDate = getArguments().getString("CHOSENDATE");
+            prefHasChanged = getArguments().getBoolean("pref_changed", false);
             Log.d("CHOSENDATE", chosenDate);
         }
     }
@@ -101,13 +107,13 @@ public class DailyScheduleFragment extends Fragment {
         });
 
 
+
         /*SnapshotParser<Hour> snapShotParser = new SnapshotParser<Hour>() {
             @NonNull
             @Override
             public Hour parseSnapshot(@NonNull DataSnapshot snapshot) {
-
-                Hour hmm = snapshot.getValue(Hour.class);
-                return hmm;
+                Hour hour = snapshot.getValue(Hour.class);
+                return hour;
             }
         };*/
 
@@ -123,7 +129,7 @@ public class DailyScheduleFragment extends Fragment {
         mProtocolRv.setHasFixedSize(false);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         mProtocolRv.setLayoutManager(mLayoutManager);
-        mProtocolAdapter = new ProtocolRecyclerViewAdapter((DailyScheduleActivity) getActivity(), mDatabase, path, options);
+        mProtocolAdapter = new ProtocolRecyclerViewAdapter((DailyScheduleActivity) getActivity(), mDatabase, path, options, prefHasChanged);
         Log.d("PATH", path);
         mProtocolRv.setAdapter(mProtocolAdapter);
     }
@@ -198,7 +204,7 @@ public class DailyScheduleFragment extends Fragment {
                         .setQuery(query, Hour.class)
                         .build();
 
-        mProtocolAdapter = new ProtocolRecyclerViewAdapter((DailyScheduleActivity) getActivity(), mDatabase, path, options);
+        mProtocolAdapter = new ProtocolRecyclerViewAdapter((DailyScheduleActivity) getActivity(), mDatabase, path, options, false);
         mProtocolRv.setAdapter(mProtocolAdapter);
         mProtocolAdapter.notifyDataSetChanged();
     }

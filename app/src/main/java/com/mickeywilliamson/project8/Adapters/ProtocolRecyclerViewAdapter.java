@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.buildware.widget.indeterm.IndeterminateCheckBox;
@@ -46,22 +47,26 @@ public class ProtocolRecyclerViewAdapter extends FirebaseRecyclerAdapter<Hour, P
     private DatabaseReference mDb;
     private String protocolUserDateKey;
     Protocol mProtocol;
+    boolean protocolHasChanged;
 
 
-    public ProtocolRecyclerViewAdapter(DailyScheduleActivity parent, DatabaseReference db, String path, FirebaseRecyclerOptions<Hour> options) {
+    public ProtocolRecyclerViewAdapter(DailyScheduleActivity parent, DatabaseReference db, String path, FirebaseRecyclerOptions<Hour> options, boolean protocolHasChanged) {
         super(options);
         mParentActivity = parent;
         mDb = db;
         protocolUserDateKey = path;
+        this.protocolHasChanged = protocolHasChanged;
     }
 
     @Override
     public void onDataChanged() {
         super.onDataChanged();
 
-        if (getSnapshots().size() == 0) {
+        if (getSnapshots().size() == 0 || protocolHasChanged) {
+            protocolHasChanged = false;
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mParentActivity.getApplicationContext());
             String protocolVersion = prefs.getString("pref_protocol", null);
+
             if (protocolVersion.equals(Protocol.PROTOCOL_FULL)) {
                 mProtocol = new ProtocolFull();
             } else if (protocolVersion.equals(Protocol.PROTOCOL_CHEMO)) {
@@ -74,6 +79,13 @@ public class ProtocolRecyclerViewAdapter extends FirebaseRecyclerAdapter<Hour, P
             ArrayList<Hour> hours = mProtocol.getSchedule();
             for (int i = 0; i < hours.size(); i++) {
                 mDb.child(protocolUserDateKey).child(String.valueOf(hours.get(i).getMilitaryHour())).setValue(hours.get(i));
+            }
+            if (!protocolVersion.equals(Protocol.PROTOCOL_FULL)) {
+                mDb.child(protocolUserDateKey).child("600").removeValue();
+                mDb.child(protocolUserDateKey).child("930").removeValue();
+                mDb.child(protocolUserDateKey).child("1500").removeValue();
+                mDb.child(protocolUserDateKey).child("1600").removeValue();
+                mDb.child(protocolUserDateKey).child("2200").removeValue();
             }
         }
     }
